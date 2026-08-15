@@ -180,10 +180,12 @@
   .dm-cols span:nth-child(3){text-align:left}
   .dm-cols span:nth-child(4),.dm-cols span:nth-child(5){text-align:right}
   .dm-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 18px 14px}
-  .dm-row{display:grid;grid-template-columns:56px 34px 1fr 62px 66px;gap:10px;align-items:center;
-    padding:9px 0;border-bottom:1px solid var(--line)}
+  .dm-row{display:flex;flex-direction:column;gap:5px;padding:10px 0;border-bottom:1px solid var(--line)}
   .dm-row:last-child{border-bottom:none}
+  .dm-main{display:grid;grid-template-columns:56px 34px 1fr 62px 66px;gap:10px;align-items:center}
+  .dm-meta{display:flex;flex-wrap:wrap;gap:14px;padding-left:66px;color:var(--muted);font-size:.78rem}
   .dm-row.now{background:linear-gradient(90deg,rgba(79,157,255,.14),transparent);border-radius:10px;padding-left:6px;margin-left:-6px}
+  .dm-row.now .dm-meta{padding-left:60px}
   .dm-time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.9rem}
   .dm-ico2{display:flex;justify-content:center}
   .dm-temp{font-weight:700}
@@ -479,7 +481,7 @@ async function loadWeather(){
   const url = "https://api.open-meteo.com/v1/forecast"
     + `?latitude=${lat}&longitude=${lon}`
     + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation,is_day"
-    + "&hourly=temperature_2m,weather_code,precipitation,precipitation_probability"
+    + "&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,precipitation,precipitation_probability,wind_speed_10m,wind_direction_10m"
     + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum"
     + "&forecast_days=16&past_days=1&timezone=auto";
   try{
@@ -591,12 +593,19 @@ function openDayModal(iso){
     const prob=h.precipitation_probability[i]||0;
     const mm=h.precipitation[i]||0;
     const isNow=(i===idx.nowIdx);
+    const sens=Math.round(h.apparent_temperature[i]);
+    const wind=Math.round(h.wind_speed_10m[i]);
+    const hum=Math.round(h.relative_humidity_2m[i]);
+    const dir=dirText(h.wind_direction_10m[i]);
     rows+=`<div class="dm-row${isNow?" now":""}">`
-      +`<span class="dm-time">${String(hr).padStart(2,"0")}:00${isNow?" ·":""}</span>`
-      +`<span class="dm-ico2">${iconSVG(h.weather_code[i], isDay, 26)}</span>`
-      +`<span class="dm-temp">${Math.round(h.temperature_2m[i])}°</span>`
-      +`<span class="dm-prob${prob>0?"":" zero"}">${prob}%</span>`
-      +`<span class="dm-mm${mm>0?"":" zero"}">${mm>0?mm.toFixed(1)+" mm":"0"}</span>`
+      +`<div class="dm-main">`
+        +`<span class="dm-time">${String(hr).padStart(2,"0")}:00${isNow?" ·":""}</span>`
+        +`<span class="dm-ico2">${iconSVG(h.weather_code[i], isDay, 26)}</span>`
+        +`<span class="dm-temp">${Math.round(h.temperature_2m[i])}°</span>`
+        +`<span class="dm-prob${prob>0?"":" zero"}">${prob}%</span>`
+        +`<span class="dm-mm${mm>0?"":" zero"}">${mm>0?mm.toFixed(1)+" mm":"0"}</span>`
+      +`</div>`
+      +`<div class="dm-meta"><span>🌡 ${sens}°</span><span>💨 ${wind} km/h${dir?" "+dir:""}</span><span>💧 ${hum}%</span></div>`
       +`</div>`;
   }
   body.innerHTML=rows||'<div class="chart-empty">Sin datos horarios para este día.</div>';
@@ -622,6 +631,7 @@ function fmtFullDate(iso){
   const meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
   return `${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]}`;
 }
+function dirText(deg){ if(deg==null) return ""; const d=["N","NE","E","SE","S","SO","O","NO"]; return d[Math.round(deg/45)%8]; }
 
 /* ---- Probabilidad ahora ---- */
 function renderRainNow(d){
