@@ -54,7 +54,8 @@
   /* ---- Héroe ---- */
   .hero{padding:20px;display:grid;grid-template-columns:1.1fr 1fr;gap:18px;align-items:center}
   .hero .now{display:flex;align-items:center;gap:16px}
-  .hero .now .ico{font-size:3.6rem;line-height:1}
+  .hero .now .ico{width:66px;height:66px;display:flex;align-items:center;justify-content:center}
+  .wi{display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.28))}
   .hero .now .temp{font-size:3.4rem;font-weight:700;line-height:1}
   .hero .now .desc{color:var(--muted);margin-top:2px}
   .hero .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
@@ -71,7 +72,7 @@
   .carousel-wrap{position:relative}
   .days-carousel{
     display:flex;gap:10px;overflow-x:auto;padding:12px;scroll-snap-type:x proximity;
-    scroll-behavior:smooth;-webkit-overflow-scrolling:touch;
+    scroll-behavior:smooth;-webkit-overflow-scrolling:touch;align-items:stretch;
   }
   .days-carousel::-webkit-scrollbar{height:8px}
   .days-carousel::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
@@ -87,12 +88,18 @@
   .seg{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;
        background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
   .seg .seg-when{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
-  .seg .seg-ico{font-size:1.5rem;text-align:center}
+  .seg .seg-ico{display:flex;justify-content:center}
   .seg .seg-temp{font-weight:700;font-size:1.02rem;text-align:right;white-space:nowrap}
   .seg .seg-prob{grid-column:1 / -1;font-size:.78rem;color:var(--rain);display:flex;align-items:center;gap:5px}
-  .dc-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem;padding:0 2px}
+  .dc-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem;padding:0 2px;margin-top:auto}
   .dc-foot b{color:var(--ink)}
-  .scroll-hint{position:absolute;top:-30px;right:6px;color:var(--muted);font-size:.76rem;display:flex;align-items:center;gap:6px}
+  .fade-right{position:absolute;top:1px;bottom:1px;right:1px;width:56px;pointer-events:none;
+    background:linear-gradient(270deg,var(--card) 30%,transparent);
+    border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius);
+    display:flex;align-items:center;justify-content:flex-end;padding-right:10px;
+    color:var(--muted);font-size:1.6rem;font-weight:300;opacity:0;transition:opacity .2s}
+  .fade-right.show{opacity:1}
+  .swipe-note{text-align:center;color:var(--muted);font-size:.78rem;margin:8px 4px 0}
 
   /* ---- Probabilidad de lluvia ---- */
   .rain-now{padding:18px 20px;display:flex;align-items:center;gap:18px}
@@ -199,9 +206,10 @@
     </div>
   </div>
   <section class="card carousel-wrap">
-    <div class="scroll-hint">desliza →</div>
     <div class="days-carousel" id="days"><div class="chart-empty">Cargando pronóstico…</div></div>
+    <div class="fade-right" id="fadeRight">›</div>
   </section>
+  <div class="swipe-note" id="swipeNote" style="display:none">Desliza para ver más días →</div>
 
   <!-- 2) PROBABILIDAD DE LLUVIA -->
   <div class="section-title"><h2>Probabilidad de lluvia</h2><span class="hint" id="rainHint"></span></div>
@@ -304,6 +312,47 @@ const wmo = (c) => WMO[c] || ["❓","—"];
 // severidad para elegir icono representativo de una franja
 const SEV = (c)=>{ if(c>=95)return 9; if(c>=80)return 8; if(c>=61)return 7; if(c>=71)return 6;
   if(c>=51)return 5; if(c>=45)return 4; if(c===3)return 3; if(c===2)return 2; if(c===1)return 1; return 0; };
+
+/* ---- Iconos SVG del tiempo (limpios y consistentes) ---- */
+function catOf(code, isDay){
+  if(code===0) return isDay?"sun":"moon";
+  if(code===1||code===2) return isDay?"partly":"partlyn";
+  if(code===3) return "cloud";
+  if(code===45||code===48) return "fog";
+  if((code>=51&&code<=67)||code===80||code===81||code===82) return "rain";
+  if((code>=71&&code<=77)||code===85||code===86) return "snow";
+  if(code>=95) return "storm";
+  return "cloud";
+}
+function iconSVG(code, isDay, size){
+  size=size||30; const cat=catOf(code, isDay);
+  const rays=(cx,cy,r)=>{ let l=""; for(let i=0;i<8;i++){ const a=i*Math.PI/4;
+    const x1=(cx+Math.cos(a)*(r+2)).toFixed(1), y1=(cy+Math.sin(a)*(r+2)).toFixed(1),
+          x2=(cx+Math.cos(a)*(r+4.4)).toFixed(1), y2=(cy+Math.sin(a)*(r+4.4)).toFixed(1);
+    l+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`; }
+    return `<g stroke="#fbbf24" stroke-width="1.7" stroke-linecap="round">${l}</g>`; };
+  const sun=(cx,cy,r)=>`${rays(cx,cy,r)}<circle cx="${cx}" cy="${cy}" r="${r}" fill="#fbbf24"/>`;
+  const moon=`<path d="M20 14A8 8 0 1 1 10.5 4.2 6.4 6.4 0 0 0 20 14z" fill="#dbe4f0"/>`;
+  const cloud=(fill,tx,ty,sc)=>`<path transform="translate(${tx},${ty}) scale(${sc})" fill="${fill}" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>`;
+  const drops=`<g stroke="#38bdf8" stroke-width="2" stroke-linecap="round"><line x1="8.5" y1="17.6" x2="7.4" y2="21"/><line x1="12" y1="17.6" x2="10.9" y2="21"/><line x1="15.5" y1="17.6" x2="14.4" y2="21"/></g>`;
+  const bolt=`<path d="M13 15.5l-3.4 5.2h2.6l-1 3.9 4.6-6.2H13l1.4-2.9z" fill="#fbbf24"/>`;
+  const flakes=`<g fill="#e2e8f0"><circle cx="8.5" cy="19.2" r="1.1"/><circle cx="12" cy="20.6" r="1.1"/><circle cx="15.5" cy="19.2" r="1.1"/></g>`;
+  const foglines=`<g stroke="#9fb0c8" stroke-width="1.8" stroke-linecap="round"><line x1="6" y1="18.5" x2="18" y2="18.5"/><line x1="8" y1="21.5" x2="20" y2="21.5"/></g>`;
+  let inner;
+  switch(cat){
+    case "sun":   inner=sun(12,12,5); break;
+    case "moon":  inner=moon; break;
+    case "partly":inner=sun(8.5,8.5,3.4)+cloud("#cbd5e1",3.5,4.5,0.7); break;
+    case "partlyn":inner=`<path d="M15.5 10.5A6 6 0 0 1 9 4.6 6.4 6.4 0 1 0 15.5 10.5z" fill="#dbe4f0"/>`+cloud("#cbd5e1",3.5,5,0.7); break;
+    case "cloud": inner=cloud("#cbd5e1",0,0.5,0.98); break;
+    case "fog":   inner=cloud("#cbd5e1",2.6,-1.5,0.78)+foglines; break;
+    case "rain":  inner=cloud("#cbd5e1",2.6,-0.5,0.8)+drops; break;
+    case "storm": inner=cloud("#b9c4d6",2.6,-0.5,0.8)+bolt; break;
+    case "snow":  inner=cloud("#cbd5e1",2.6,-0.5,0.8)+flakes; break;
+    default:      inner=cloud("#cbd5e1",0,0.5,0.98);
+  }
+  return `<svg class="wi" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${inner}</svg>`;
+}
 
 const dayNames = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
 function fmtDay(iso, isToday, isTomorrow){
@@ -419,8 +468,8 @@ function buildIndex(d){
 
 function renderCurrent(d){
   const c=d.current, u=d.current_units||{};
-  const [ico,desc]=wmo(c.weather_code);
-  $("nowIco").textContent = c.is_day===0 ? nightIcon(c.weather_code, ico) : ico;
+  const [,desc]=wmo(c.weather_code);
+  $("nowIco").innerHTML = iconSVG(c.weather_code, c.is_day!==0, 64);
   $("nowTemp").textContent = Math.round(c.temperature_2m)+"°";
   $("nowDesc").textContent = desc;
   $("mFeels").textContent = Math.round(c.apparent_temperature)+"°";
@@ -462,17 +511,25 @@ function renderDays(d, n){
     const card=document.createElement("div"); card.className="day-card"+(isToday?" today":"");
     card.innerHTML =
       `<div class="dc-head"><span class="dc-name">${fmtDay(iso,isToday, i===start+1)}</span><span class="dc-date">${fmtDate(iso)}</span></div>`+
-      segHTML("🌅 Mañana", manana)+
-      segHTML("🌇 Tarde", tarde)+
+      segHTML("Mañana", manana)+
+      segHTML("Tarde", tarde)+
       `<div class="dc-foot"><span>mín <b>${Math.round(dd.temperature_2m_min[i])}°</b></span><span>máx <b>${Math.round(dd.temperature_2m_max[i])}°</b></span></div>`;
     box.appendChild(card);
   }
+  updateCarouselUI();
+}
+function updateCarouselUI(){
+  const c=$("days"), fade=$("fadeRight"), note=$("swipeNote");
+  const scrollable = c.scrollWidth > c.clientWidth + 4;
+  c.style.justifyContent = scrollable ? "flex-start" : "center";
+  note.style.display = scrollable ? "block" : "none";
+  const atEnd = c.scrollLeft + c.clientWidth >= c.scrollWidth - 6;
+  fade.classList.toggle("show", scrollable && !atEnd);
 }
 function fallbackSeg(dd,i){ return { code:dd.weather_code[i], prob:dd.precipitation_probability_max[i]||0, temp:Math.round(dd.temperature_2m_max[i]) }; }
 function segHTML(label, s){
-  const [ico]=wmo(s.code);
   const prob = s.prob>0 ? `<div class="seg-prob">💧 ${s.prob}%</div>` : "";
-  return `<div class="seg"><span class="seg-when">${label}</span><span class="seg-ico">${ico}</span><span class="seg-temp">${s.temp}°</span>${prob}</div>`;
+  return `<div class="seg"><span class="seg-when">${label}</span><span class="seg-ico">${iconSVG(s.code,true,30)}</span><span class="seg-temp">${s.temp}°</span>${prob}</div>`;
 }
 
 /* ---- Probabilidad ahora ---- */
@@ -577,7 +634,8 @@ function renderPrecipChart(d){
 function roundRect(ctx,x,y,w,h,r){ r=Math.min(r,w/2,h/2); if(r<0)r=0;
   ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
   ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
-window.addEventListener("resize", ()=>{ if(CURRENT_DATA) renderPrecipChart(CURRENT_DATA); });
+window.addEventListener("resize", ()=>{ if(CURRENT_DATA){ renderPrecipChart(CURRENT_DATA); updateCarouselUI(); } });
+$("days").addEventListener("scroll", updateCarouselUI);
 
 /* ---- Radar + capas ---- */
 let radarState = { frames:[], idx:0, layers:{}, playing:true, timer:null, host:"" };
