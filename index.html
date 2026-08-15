@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0b1220" />
 <title>El Tiempo · Pronóstico, lluvia y radar</title>
-<meta name="description" content="Pronóstico a 5, 10 y 15 días, probabilidad de lluvia, gráfica de precipitación minuto a minuto y radar meteorológico con zoom en tu localidad." />
+<meta name="description" content="Pronóstico a 5, 10 y 15 días con mañana y tarde, probabilidad de lluvia, gráfica de precipitación ±12 h y radar meteorológico con zoom en tu localidad." />
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -13,7 +13,7 @@
   :root{
     --bg:#0b1220; --bg2:#0f1a2e; --card:#111c33; --card2:#16233f;
     --ink:#eaf1ff; --muted:#93a4c4; --line:#22314f;
-    --accent:#4f9dff; --accent2:#7cc4ff; --rain:#38bdf8; --prob:#a78bfa;
+    --accent:#4f9dff; --accent2:#7cc4ff; --rain:#38bdf8; --rainpast:#5a708f; --prob:#a78bfa;
     --warn:#fbbf24; --ok:#34d399; --danger:#fb7185;
     --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
     --font: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -21,7 +21,7 @@
   @media (prefers-color-scheme: light){
     :root{
       --bg:#eef3fb; --bg2:#e3ecf9; --card:#ffffff; --card2:#f4f8ff;
-      --ink:#0d1730; --muted:#5a6a86; --line:#dbe6f7;
+      --ink:#0d1730; --muted:#5a6a86; --line:#dbe6f7; --rainpast:#9fb0c8;
       --shadow:0 10px 30px rgba(20,40,80,.10);
     }
   }
@@ -33,29 +33,25 @@
     background-attachment:scroll; min-height:100vh; -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:960px;margin:0 auto;padding:16px 16px 48px}
-  header.top{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:10px 4px 18px;
-  }
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 4px 18px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem}
   .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
   .loc{display:flex;align-items:center;gap:8px;min-width:0}
   .loc .name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}
   button, .btn{
     font-family:inherit;font-size:.9rem;cursor:pointer;border:1px solid var(--line);
-    background:var(--card);color:var(--ink);padding:8px 12px;border-radius:12px;
-    transition:.15s ease; line-height:1;
+    background:var(--card);color:var(--ink);padding:8px 12px;border-radius:12px;transition:.15s ease;line-height:1;
   }
   button:hover,.btn:hover{border-color:var(--accent);color:var(--accent)}
   button:active{transform:translateY(1px)}
   .btn.primary{background:var(--accent);color:#04122b;border-color:transparent;font-weight:600}
   .btn.primary:hover{filter:brightness(1.06);color:#04122b}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-  .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 4px 12px}
+  .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 4px 12px;flex-wrap:wrap}
   .section-title h2{font-size:1.02rem;margin:0;letter-spacing:.2px}
   .section-title .hint{color:var(--muted);font-size:.8rem}
 
-  /* ---- Pronóstico principal (primer plano) ---- */
+  /* ---- Héroe ---- */
   .hero{padding:20px;display:grid;grid-template-columns:1.1fr 1fr;gap:18px;align-items:center}
   .hero .now{display:flex;align-items:center;gap:16px}
   .hero .now .ico{font-size:3.6rem;line-height:1}
@@ -71,25 +67,34 @@
   .range-tabs button{padding:7px 12px;border-radius:999px}
   .range-tabs button.active{background:var(--accent);color:#04122b;border-color:transparent;font-weight:700}
 
-  .days{display:grid;gap:8px;padding:8px}
-  .day{
-    display:grid;grid-template-columns:1.4fr .7fr 1fr 1.2fr;align-items:center;gap:10px;
-    padding:10px 12px;border-radius:12px;
+  /* ---- Carrusel de días ---- */
+  .carousel-wrap{position:relative}
+  .days-carousel{
+    display:flex;gap:10px;overflow-x:auto;padding:12px;scroll-snap-type:x proximity;
+    scroll-behavior:smooth;-webkit-overflow-scrolling:touch;
   }
-  .day:nth-child(odd){background:var(--card2)}
-  .day .d-name{font-weight:600;text-transform:capitalize}
-  .day .d-date{color:var(--muted);font-size:.78rem}
-  .day .d-ico{font-size:1.5rem;text-align:center}
-  .day .d-rain{color:var(--rain);font-size:.85rem;display:flex;align-items:center;gap:6px;justify-content:flex-start}
-  .day .d-temps{display:flex;align-items:center;gap:8px;justify-content:flex-end;font-weight:600}
-  .day .d-temps .min{color:var(--muted);font-weight:500}
-  .tbar{height:6px;border-radius:4px;background:linear-gradient(90deg,var(--accent2),var(--warn));opacity:.5;min-width:24px}
-  @media (max-width:640px){
-    .day{grid-template-columns:1.3fr .6fr 1fr;}
-    .day .d-rain{display:none}
+  .days-carousel::-webkit-scrollbar{height:8px}
+  .days-carousel::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  .days-carousel{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+  .day-card{
+    flex:0 0 auto;width:150px;scroll-snap-align:start;background:var(--card2);
+    border:1px solid var(--line);border-radius:16px;padding:12px 12px 10px;display:flex;flex-direction:column;gap:10px;
   }
+  .day-card.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .dc-head{display:flex;flex-direction:column;gap:1px}
+  .dc-name{font-weight:700;text-transform:capitalize}
+  .dc-date{color:var(--muted);font-size:.76rem}
+  .seg{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;
+       background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+  .seg .seg-when{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .seg .seg-ico{font-size:1.5rem;text-align:center}
+  .seg .seg-temp{font-weight:700;font-size:1.02rem;text-align:right;white-space:nowrap}
+  .seg .seg-prob{grid-column:1 / -1;font-size:.78rem;color:var(--rain);display:flex;align-items:center;gap:5px}
+  .dc-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem;padding:0 2px}
+  .dc-foot b{color:var(--ink)}
+  .scroll-hint{position:absolute;top:-30px;right:6px;color:var(--muted);font-size:.76rem;display:flex;align-items:center;gap:6px}
 
-  /* ---- Probabilidad de lluvia actual ---- */
+  /* ---- Probabilidad de lluvia ---- */
   .rain-now{padding:18px 20px;display:flex;align-items:center;gap:18px}
   .gauge{position:relative;width:96px;height:96px;flex:none}
   .gauge svg{transform:rotate(-90deg)}
@@ -98,22 +103,28 @@
   .rain-now .txt .sub{color:var(--muted);margin-top:4px;font-size:.9rem}
 
   /* ---- Gráfica precipitación ---- */
-  .chart-card{padding:12px 8px 4px}
-  .chart-legend{display:flex;gap:16px;padding:4px 14px 10px;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
+  .chart-card{padding:12px 0 6px;position:relative}
+  .chart-legend{display:flex;gap:16px;padding:0 16px 8px;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
   .chart-legend .lg{display:flex;align-items:center;gap:6px}
   .swatch{width:12px;height:12px;border-radius:3px}
-  #precipChart{width:100%;height:220px;display:block}
+  .chart-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;position:relative}
+  .chart-scroll::-webkit-scrollbar{height:8px}
+  .chart-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  #precipChart{display:block;height:240px}
+  .yaxis{position:absolute;top:12px;height:240px;width:38px;pointer-events:none;z-index:3}
+  .yaxis.left{left:0;background:linear-gradient(90deg,var(--card) 70%,transparent)}
+  .yaxis.right{right:0;background:linear-gradient(270deg,var(--card) 70%,transparent);text-align:right}
+  .yaxis span{position:absolute;font-size:10px;color:var(--muted);left:4px;right:4px}
   .chart-empty{padding:26px;text-align:center;color:var(--muted)}
 
   /* ---- Radar ---- */
-  #radar{height:420px;border-radius:var(--radius);overflow:hidden;position:relative}
+  #radar{height:440px;border-radius:var(--radius);overflow:hidden;position:relative}
   .radar-controls{
     position:absolute;z-index:500;left:12px;bottom:12px;display:flex;align-items:center;gap:10px;
     background:rgba(10,18,34,.72);backdrop-filter:blur(8px);padding:8px 10px;border-radius:12px;color:#eaf1ff;
     font-size:.82rem;border:1px solid rgba(255,255,255,.08)
   }
   .radar-controls button{background:rgba(255,255,255,.1);border-color:transparent;color:#fff;padding:6px 9px}
-  .radar-controls .t{min-width:118px}
   .radar-scale{
     position:absolute;z-index:500;right:12px;top:12px;background:rgba(10,18,34,.72);backdrop-filter:blur(8px);
     padding:8px 10px;border-radius:10px;color:#dfeaff;font-size:.72rem;border:1px solid rgba(255,255,255,.08)
@@ -121,21 +132,18 @@
   .radar-scale .bar{height:8px;width:150px;border-radius:4px;margin-top:6px;
     background:linear-gradient(90deg,#22c1ee,#3b82f6,#22c55e,#eab308,#f97316,#ef4444,#a21caf)}
   .radar-scale .ends{display:flex;justify-content:space-between;margin-top:3px;color:#9fb3d6}
+  .leaflet-control-layers{border-radius:10px !important}
 
-  /* ---- Overlay de localización ---- */
-  .overlay{
-    position:fixed;inset:0;z-index:2000;background:rgba(4,9,20,.72);backdrop-filter:blur(6px);
-    display:flex;align-items:center;justify-content:center;padding:20px
-  }
+  /* ---- Overlay de ubicación ---- */
+  .overlay{position:fixed;inset:0;z-index:2000;background:rgba(4,9,20,.72);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;padding:20px}
   .overlay.hidden{display:none}
   .modal{width:100%;max-width:440px;padding:24px;border-radius:20px}
   .modal h3{margin:0 0 6px;font-size:1.2rem}
   .modal p{margin:0 0 16px;color:var(--muted);font-size:.92rem;line-height:1.5}
   .modal .field{display:flex;gap:8px;margin-top:10px}
-  .modal input[type=text]{
-    flex:1;padding:11px 13px;border-radius:12px;border:1px solid var(--line);
-    background:var(--card2);color:var(--ink);font-size:.95rem;font-family:inherit
-  }
+  .modal input[type=text]{flex:1;padding:11px 13px;border-radius:12px;border:1px solid var(--line);
+    background:var(--card2);color:var(--ink);font-size:.95rem;font-family:inherit}
   .modal input[type=text]:focus{outline:none;border-color:var(--accent)}
   .results{margin-top:10px;display:grid;gap:6px;max-height:220px;overflow:auto}
   .result{padding:10px 12px;border-radius:10px;background:var(--card2);border:1px solid var(--line);cursor:pointer;font-size:.9rem}
@@ -147,15 +155,12 @@
   .divider::before,.divider::after{content:"";height:1px;background:var(--line);flex:1}
   .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--muted);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .toast{
-    position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:3000;
+  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:3000;
     background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);
-    padding:10px 16px;border-radius:12px;font-size:.88rem;opacity:0;transition:.3s;pointer-events:none
-  }
+    padding:10px 16px;border-radius:12px;font-size:.88rem;opacity:0;transition:.3s;pointer-events:none}
   .toast.show{opacity:1}
   footer{margin-top:36px;text-align:center;color:var(--muted);font-size:.78rem;line-height:1.6}
   footer a{color:var(--accent);text-decoration:none}
-  .skeleton{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -168,13 +173,13 @@
     </div>
   </header>
 
-  <!-- 1) PRONÓSTICO PRINCIPAL (PRIMER PLANO) -->
+  <!-- 1) PRONÓSTICO PRINCIPAL -->
   <section class="card hero" id="hero" aria-live="polite">
     <div class="now">
       <div class="ico" id="nowIco">⏳</div>
       <div>
         <div class="temp" id="nowTemp">--°</div>
-        <div class="desc" id="nowDesc" class="skeleton">Cargando…</div>
+        <div class="desc" id="nowDesc">Cargando…</div>
       </div>
     </div>
     <div class="metrics">
@@ -193,11 +198,12 @@
       <button data-days="15">15 días</button>
     </div>
   </div>
-  <section class="card">
-    <div class="days" id="days"><div class="chart-empty">Cargando pronóstico…</div></div>
+  <section class="card carousel-wrap">
+    <div class="scroll-hint">desliza →</div>
+    <div class="days-carousel" id="days"><div class="chart-empty">Cargando pronóstico…</div></div>
   </section>
 
-  <!-- 2) PROBABILIDAD DE LLUVIA ACTUAL -->
+  <!-- 2) PROBABILIDAD DE LLUVIA -->
   <div class="section-title"><h2>Probabilidad de lluvia</h2><span class="hint" id="rainHint"></span></div>
   <section class="card rain-now" id="rainNow">
     <div class="gauge">
@@ -214,24 +220,27 @@
     </div>
   </section>
 
-  <!-- 3) GRÁFICA DE PRECIPITACIÓN -->
-  <div class="section-title"><h2>Precipitación prevista</h2><span class="hint">próximas 2 horas · pasos de 15 min</span></div>
+  <!-- 3) GRÁFICA DE PRECIPITACIÓN ±12h -->
+  <div class="section-title"><h2>Precipitación</h2><span class="hint">±12 h · desliza para ver pasado y futuro</span></div>
   <section class="card chart-card">
     <div class="chart-legend">
-      <span class="lg"><span class="swatch" style="background:var(--rain)"></span> Lluvia (mm)</span>
+      <span class="lg"><span class="swatch" style="background:var(--rainpast)"></span> Lluvia pasada (mm)</span>
+      <span class="lg"><span class="swatch" style="background:var(--rain)"></span> Lluvia prevista (mm)</span>
       <span class="lg"><span class="swatch" style="background:var(--prob)"></span> Probabilidad (%)</span>
     </div>
-    <canvas id="precipChart"></canvas>
+    <div class="yaxis left" id="yLeft"></div>
+    <div class="yaxis right" id="yRight"></div>
+    <div class="chart-scroll" id="chartScroll"><canvas id="precipChart"></canvas></div>
     <div class="chart-empty" id="chartEmpty" style="display:none"></div>
   </section>
 
   <!-- 4) RADAR -->
-  <div class="section-title"><h2>Radar meteorológico</h2><span class="hint">últimas precipitaciones · animado</span></div>
+  <div class="section-title"><h2>Radar meteorológico</h2><span class="hint">capa Mapa / Satélite · radar animado</span></div>
   <section class="card" style="padding:6px">
     <div id="radar">
       <div class="radar-controls">
         <button id="radarPlay">⏸️</button>
-        <span class="t" id="radarTime">—</span>
+        <span id="radarTime">—</span>
       </div>
       <div class="radar-scale">Intensidad de lluvia
         <div class="bar"></div>
@@ -243,7 +252,8 @@
   <footer>
     Datos de <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> ·
     Radar de <a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a> ·
-    Mapa © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a><br>
+    Mapa © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>/CARTO ·
+    Satélite © Esri<br>
     Aplicación de demostración. La precisión depende de los servicios de datos abiertos.
   </footer>
 </div>
@@ -270,8 +280,6 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 "use strict";
-
-/* ====================== Utilidades ====================== */
 const $ = (id) => document.getElementById(id);
 const LS_KEY = "tiempo_last_location_v1";
 
@@ -280,7 +288,6 @@ function toast(msg, ms = 2600){
   clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove("show"), ms);
 }
 
-// Códigos WMO → icono + descripción (es)
 const WMO = {
   0:["☀️","Despejado"],1:["🌤️","Mayormente despejado"],2:["⛅","Parcialmente nublado"],3:["☁️","Nublado"],
   45:["🌫️","Niebla"],48:["🌫️","Niebla con escarcha"],
@@ -294,85 +301,70 @@ const WMO = {
   95:["⛈️","Tormenta"],96:["⛈️","Tormenta con granizo"],99:["⛈️","Tormenta con granizo fuerte"]
 };
 const wmo = (c) => WMO[c] || ["❓","—"];
+// severidad para elegir icono representativo de una franja
+const SEV = (c)=>{ if(c>=95)return 9; if(c>=80)return 8; if(c>=61)return 7; if(c>=71)return 6;
+  if(c>=51)return 5; if(c>=45)return 4; if(c===3)return 3; if(c===2)return 2; if(c===1)return 1; return 0; };
 
 const dayNames = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-function fmtDay(iso, i){
-  const d = new Date(iso + "T00:00");
-  if(i===0) return "Hoy";
-  if(i===1) return "Mañana";
-  return dayNames[d.getDay()];
+function fmtDay(iso, isToday, isTomorrow){
+  if(isToday) return "Hoy";
+  if(isTomorrow) return "Mañana";
+  return dayNames[new Date(iso+"T00:00").getDay()];
 }
-function fmtDate(iso){
-  const d = new Date(iso + "T00:00");
-  return d.getDate()+"/"+(d.getMonth()+1);
-}
+const fmtDate = (iso)=>{ const d=new Date(iso+"T00:00"); return d.getDate()+"/"+(d.getMonth()+1); };
 
-/* ====================== Estado ====================== */
-let STATE = { lat:null, lon:null, name:"", map:null, radar:null };
+let STATE = { lat:null, lon:null, name:"", map:null, marker:null, radarLayerGroup:null };
+let CURRENT_DATA = null;
 
-/* ====================== Overlay de ubicación ====================== */
+/* ---- Overlay ---- */
 function showOverlay(msg, isErr){
   $("overlay").classList.remove("hidden");
   if(msg){ const s=$("ovStatus"); s.textContent=msg; s.classList.toggle("err", !!isErr); }
 }
 function hideOverlay(){ $("overlay").classList.add("hidden"); $("results").innerHTML=""; $("ovStatus").textContent=""; }
-
 $("btnChange").addEventListener("click", ()=>showOverlay(""));
 $("btnGeo").addEventListener("click", requestPreciseLocation);
 $("btnSearch").addEventListener("click", doSearch);
 $("searchInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter") doSearch(); });
 
 function requestPreciseLocation(){
-  if(!("geolocation" in navigator)){
-    showOverlay("Este dispositivo no permite geolocalización. Introduce tu población manualmente.", true);
-    return;
-  }
+  if(!("geolocation" in navigator)){ showOverlay("Este dispositivo no permite geolocalización. Introduce tu población manualmente.", true); return; }
   $("ovStatus").classList.remove("err");
   $("ovStatus").innerHTML = '<span class="spinner"></span> Solicitando ubicación precisa…';
   navigator.geolocation.getCurrentPosition(
     async (pos)=>{
       const { latitude, longitude } = pos.coords;
       const name = await reverseGeocode(latitude, longitude);
-      setLocation(latitude, longitude, name || "Mi ubicación");
-      hideOverlay();
+      setLocation(latitude, longitude, name || "Mi ubicación"); hideOverlay();
     },
     (err)=>{
       let m = "No se pudo obtener la ubicación. Introduce tu población manualmente.";
       if(err.code===1) m = "Permiso de ubicación denegado. Introduce tu población manualmente.";
       else if(err.code===2) m = "Ubicación no disponible. Introduce tu población manualmente.";
       else if(err.code===3) m = "Se agotó el tiempo de espera. Introduce tu población manualmente.";
-      showOverlay(m, true);
-      $("searchInput").focus();
+      showOverlay(m, true); $("searchInput").focus();
     },
     { enableHighAccuracy:true, timeout:12000, maximumAge:0 }
   );
 }
-
 async function doSearch(){
   const q = $("searchInput").value.trim();
   if(q.length < 2){ showOverlay("Escribe al menos 2 caracteres.", true); return; }
-  const s=$("ovStatus"); s.classList.remove("err");
-  s.innerHTML='<span class="spinner"></span> Buscando…';
-  $("results").innerHTML="";
+  const s=$("ovStatus"); s.classList.remove("err"); s.innerHTML='<span class="spinner"></span> Buscando…'; $("results").innerHTML="";
   try{
     const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=es&format=json`;
-    const r = await fetch(url); const data = await r.json();
-    s.textContent="";
+    const r = await fetch(url); const data = await r.json(); s.textContent="";
     if(!data.results || !data.results.length){ showOverlay("Sin resultados. Prueba con otro nombre.", true); return; }
     const box = $("results");
     data.results.forEach(loc=>{
       const div=document.createElement("div"); div.className="result";
       const region=[loc.admin1, loc.country].filter(Boolean).join(", ");
       div.innerHTML=`<div>${loc.name}</div><div class="r-sub">${region}</div>`;
-      div.addEventListener("click", ()=>{
-        setLocation(loc.latitude, loc.longitude, `${loc.name}${loc.country?", "+loc.country_code:""}`);
-        hideOverlay();
-      });
+      div.addEventListener("click", ()=>{ setLocation(loc.latitude, loc.longitude, `${loc.name}${loc.country_code?", "+loc.country_code:""}`); hideOverlay(); });
       box.appendChild(div);
     });
   }catch(e){ showOverlay("Error de red al buscar. Reinténtalo.", true); }
 }
-
 async function reverseGeocode(lat, lon){
   try{
     const url=`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
@@ -381,39 +373,48 @@ async function reverseGeocode(lat, lon){
   }catch(e){ return null; }
 }
 
-/* ====================== Fijar ubicación y refrescar todo ====================== */
+/* ---- Fijar ubicación ---- */
 function setLocation(lat, lon, name){
   STATE.lat=lat; STATE.lon=lon; STATE.name=name;
-  $("locName").textContent = name;
-  document.title = `El Tiempo · ${name}`;
+  $("locName").textContent = name; document.title = `El Tiempo · ${name}`;
   try{ localStorage.setItem(LS_KEY, JSON.stringify({lat,lon,name})); }catch(e){}
-  loadWeather();
-  initOrMoveRadar();
+  loadWeather(); initOrMoveRadar();
 }
 
-/* ====================== Carga de datos meteorológicos ====================== */
-let CURRENT_DATA = null;
-
+/* ---- Carga meteorológica ---- */
 async function loadWeather(){
   const {lat,lon}=STATE;
   const url = "https://api.open-meteo.com/v1/forecast"
     + `?latitude=${lat}&longitude=${lon}`
     + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation,is_day"
-    + "&minutely_15=precipitation,precipitation_probability"
+    + "&hourly=temperature_2m,weather_code,precipitation,precipitation_probability"
     + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum"
-    + "&forecast_days=16&timezone=auto&forecast_minutely_15=12";
+    + "&forecast_days=16&past_days=1&timezone=auto";
   try{
     const r=await fetch(url); const d=await r.json();
     if(d.error) throw new Error(d.reason||"error API");
+    d._idx = buildIndex(d);
     CURRENT_DATA=d;
-    renderCurrent(d);
-    renderDays(d, currentRange());
-    renderRainNow(d);
-    renderPrecipChart(d);
-  }catch(e){
-    toast("No se pudieron cargar los datos meteorológicos.");
-    $("nowDesc").textContent="Error al cargar datos";
-  }
+    renderCurrent(d); renderDays(d, currentRange()); renderRainNow(d); renderPrecipChart(d);
+  }catch(e){ toast("No se pudieron cargar los datos meteorológicos."); $("nowDesc").textContent="Error al cargar datos"; }
+}
+
+// Índices y agrupación por fecha (past_days desplaza los arrays)
+function buildIndex(d){
+  const curPrefix = d.current.time.slice(0,13);          // YYYY-MM-DDTHH
+  const curDate   = d.current.time.slice(0,10);
+  let nowIdx = d.hourly.time.findIndex(t=>t.slice(0,13)===curPrefix);
+  if(nowIdx<0) nowIdx = d.hourly.time.findIndex(t=>t.slice(0,10)===curDate);
+  let todayIdx = d.daily.time.indexOf(curDate);
+  if(todayIdx<0) todayIdx = Math.max(0, d.daily.time.length-16);
+  // agrupar horas por fecha
+  const byDate={};
+  d.hourly.time.forEach((t,i)=>{
+    const day=t.slice(0,10), h=+t.slice(11,13);
+    (byDate[day]=byDate[day]||[]).push({h, temp:d.hourly.temperature_2m[i],
+      code:d.hourly.weather_code[i], prob:d.hourly.precipitation_probability[i]||0});
+  });
+  return { nowIdx, todayIdx, byDate, curDate };
 }
 
 function renderCurrent(d){
@@ -425,60 +426,65 @@ function renderCurrent(d){
   $("mFeels").textContent = Math.round(c.apparent_temperature)+"°";
   $("mWind").textContent = Math.round(c.wind_speed_10m)+" "+(u.wind_speed_10m||"km/h");
   $("mHum").textContent = Math.round(c.relative_humidity_2m)+"%";
-  const dd=d.daily;
-  $("mMinMax").textContent = Math.round(dd.temperature_2m_max[0])+"° / "+Math.round(dd.temperature_2m_min[0])+"°";
+  const t=d._idx.todayIdx, dd=d.daily;
+  $("mMinMax").textContent = Math.round(dd.temperature_2m_max[t])+"° / "+Math.round(dd.temperature_2m_min[t])+"°";
 }
-function nightIcon(code, dayIco){
-  if(code===0) return "🌙";
-  if(code===1||code===2) return "☁️";
-  return dayIco;
+function nightIcon(code, dayIco){ if(code===0) return "🌙"; if(code===1||code===2) return "☁️"; return dayIco; }
+
+/* ---- Franja mañana/tarde ---- */
+function segment(entries, from, to, repHour){
+  const sel = entries.filter(e=>e.h>=from && e.h<to);
+  if(!sel.length) return null;
+  let prob=0, rep=sel[0], bestSev=-1;
+  sel.forEach(e=>{ if(e.prob>prob) prob=e.prob; const s=SEV(e.code); if(s>bestSev){bestSev=s;rep=e;} });
+  let repHourEntry = sel.find(e=>e.h===repHour);
+  const temp = Math.round((repHourEntry||sel[Math.floor(sel.length/2)]).temp);
+  return { code:rep.code, prob:Math.round(prob), temp };
 }
 
-/* ---- Pronóstico extendido 5/10/15 ---- */
+/* ---- Carrusel de días ---- */
 function currentRange(){ return parseInt(document.querySelector("#rangeTabs button.active").dataset.days,10); }
 $("rangeTabs").addEventListener("click", (e)=>{
   if(e.target.tagName!=="BUTTON") return;
   document.querySelectorAll("#rangeTabs button").forEach(b=>b.classList.remove("active"));
   e.target.classList.add("active");
-  if(CURRENT_DATA) renderDays(CURRENT_DATA, currentRange());
+  if(CURRENT_DATA){ renderDays(CURRENT_DATA, currentRange()); $("days").scrollTo({left:0}); }
 });
 
 function renderDays(d, n){
-  const dd=d.daily; const box=$("days"); box.innerHTML="";
-  const count=Math.min(n, dd.time.length);
-  const maxTemp=Math.max(...dd.temperature_2m_max.slice(0,count));
-  for(let i=0;i<count;i++){
-    const [ico]=wmo(dd.weather_code[i]);
-    const prob=dd.precipitation_probability_max[i];
-    const mm=dd.precipitation_sum[i];
-    const row=document.createElement("div"); row.className="day";
-    const barW = Math.max(24, Math.round((dd.temperature_2m_max[i]/ (maxTemp||1))*90));
-    row.innerHTML =
-      `<div><div class="d-name">${fmtDay(dd.time[i],i)}</div><div class="d-date">${fmtDate(dd.time[i])}</div></div>`+
-      `<div class="d-ico">${ico}</div>`+
-      `<div class="d-rain">💧 ${prob!=null?prob:0}%${mm>0?` · ${mm.toFixed(1)}mm`:""}</div>`+
-      `<div class="d-temps"><span class="tbar" style="width:${barW}px"></span> ${Math.round(dd.temperature_2m_max[i])}° <span class="min">${Math.round(dd.temperature_2m_min[i])}°</span></div>`;
-    box.appendChild(row);
+  const dd=d.daily, idx=d._idx, box=$("days"); box.innerHTML="";
+  const start=idx.todayIdx, end=Math.min(dd.time.length, start+n);
+  for(let i=start;i<end;i++){
+    const iso=dd.time[i], entries=idx.byDate[iso]||[];
+    const isToday=(iso===idx.curDate), isTomorrow=(i===start+1 && !isToday) || (isToday===false && i===start+1);
+    const manana = segment(entries, 6, 14, 9)  || fallbackSeg(dd,i);
+    const tarde  = segment(entries, 14, 21, 16) || fallbackSeg(dd,i);
+    const card=document.createElement("div"); card.className="day-card"+(isToday?" today":"");
+    card.innerHTML =
+      `<div class="dc-head"><span class="dc-name">${fmtDay(iso,isToday, i===start+1)}</span><span class="dc-date">${fmtDate(iso)}</span></div>`+
+      segHTML("🌅 Mañana", manana)+
+      segHTML("🌇 Tarde", tarde)+
+      `<div class="dc-foot"><span>mín <b>${Math.round(dd.temperature_2m_min[i])}°</b></span><span>máx <b>${Math.round(dd.temperature_2m_max[i])}°</b></span></div>`;
+    box.appendChild(card);
   }
 }
+function fallbackSeg(dd,i){ return { code:dd.weather_code[i], prob:dd.precipitation_probability_max[i]||0, temp:Math.round(dd.temperature_2m_max[i]) }; }
+function segHTML(label, s){
+  const [ico]=wmo(s.code);
+  const prob = s.prob>0 ? `<div class="seg-prob">💧 ${s.prob}%</div>` : "";
+  return `<div class="seg"><span class="seg-when">${label}</span><span class="seg-ico">${ico}</span><span class="seg-temp">${s.temp}°</span>${prob}</div>`;
+}
 
-/* ---- Probabilidad de lluvia actual ---- */
+/* ---- Probabilidad ahora ---- */
 function renderRainNow(d){
-  const dd=d.daily;
-  const probNow = dd.precipitation_probability_max ? dd.precipitation_probability_max[0] : null;
-  // Probabilidad "ahora": máxima de los próximos bloques de 15 min, con respaldo a la diaria
-  let nowProb = probNow;
-  const mp = d.minutely_15 && d.minutely_15.precipitation_probability;
-  if(mp && mp.length){
-    const soon = mp.slice(0,8).filter(v=>v!=null);
-    if(soon.length) nowProb = Math.max(...soon);
-  }
-  nowProb = nowProb==null ? 0 : nowProb;
-  const arc=$("gaugeArc"); const C=251.2;
+  const idx=d._idx, hp=d.hourly.precipitation_probability;
+  let nowProb=0;
+  if(idx.nowIdx>=0){ const win=hp.slice(idx.nowIdx, idx.nowIdx+6).filter(v=>v!=null); if(win.length) nowProb=Math.max(...win); }
+  if(!nowProb){ const t=idx.todayIdx; nowProb=d.daily.precipitation_probability_max[t]||0; }
+  const arc=$("gaugeArc"), C=251.2;
   arc.style.strokeDashoffset = C - (C*nowProb/100);
   arc.style.stroke = nowProb>=60 ? "var(--accent)" : nowProb>=30 ? "var(--prob)" : "var(--rain)";
   $("gaugeVal").textContent = Math.round(nowProb)+"%";
-
   const rainingNow = (d.current && d.current.precipitation>0);
   let big, sub;
   if(rainingNow){ big="🌧️ Está lloviendo ahora"; sub=`${d.current.precipitation} mm en la última hora.`; }
@@ -487,106 +493,106 @@ function renderRainNow(d){
   else if(nowProb>0){ big="Lluvia poco probable"; sub="Bajo riesgo de precipitación por ahora."; }
   else { big="☀️ Sin lluvia prevista"; sub="No se espera precipitación en las próximas horas."; }
   $("rainBig").textContent=big; $("rainSub").textContent=sub;
-  const total = dd.precipitation_sum ? dd.precipitation_sum[0] : 0;
+  const total=d.daily.precipitation_sum[idx.todayIdx]||0;
   $("rainHint").textContent = total>0 ? `hoy: ${total.toFixed(1)} mm acumulados` : "";
 }
 
-/* ---- Gráfica de precipitación (canvas) ---- */
+/* ---- Gráfica ±12h ---- */
 function renderPrecipChart(d){
-  const cv=$("precipChart"); const empty=$("chartEmpty");
-  const m=d.minutely_15;
-  if(!m || !m.time || !m.time.length){
-    cv.style.display="none"; empty.style.display="block";
-    empty.textContent="No hay datos de precipitación minuto a minuto para esta zona.";
-    return;
-  }
+  const cv=$("precipChart"), empty=$("chartEmpty"), scroll=$("chartScroll"), idx=d._idx;
+  if(idx.nowIdx<0 || !d.hourly.time.length){ cv.style.display="none"; empty.style.display="block"; empty.textContent="No hay datos de precipitación para esta zona."; return; }
   cv.style.display="block"; empty.style.display="none";
-
-  const N=Math.min(12, m.time.length); // 12 × 15min = 3h
-  const times=m.time.slice(0,N);
-  const precip=m.precipitation.slice(0,N).map(v=>v==null?0:v);
-  const prob=(m.precipitation_probability||[]).slice(0,N).map(v=>v==null?0:v);
-
-  const dpr=window.devicePixelRatio||1;
-  const cssW=cv.clientWidth||cv.parentElement.clientWidth-16;
-  const cssH=220;
-  cv.width=cssW*dpr; cv.height=cssH*dpr;
-  const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.clearRect(0,0,cssW,cssH);
-
-  const style=getComputedStyle(document.documentElement);
-  const cRain=style.getPropertyValue("--rain").trim()||"#38bdf8";
-  const cProb=style.getPropertyValue("--prob").trim()||"#a78bfa";
-  const cLine=style.getPropertyValue("--line").trim()||"#22314f";
-  const cMuted=style.getPropertyValue("--muted").trim()||"#93a4c4";
-
-  const padL=38, padR=40, padT=16, padB=34;
-  const w=cssW-padL-padR, h=cssH-padT-padB;
-  const maxP=Math.max(0.5, Math.max(...precip)*1.25); // mm eje izq
-
-  // Rejilla + eje probabilidad (der 0-100)
-  ctx.strokeStyle=cLine; ctx.fillStyle=cMuted; ctx.font="11px "+style.getPropertyValue("--font");
-  ctx.lineWidth=1;
-  for(let g=0; g<=4; g++){
-    const y=padT + h*(g/4);
-    ctx.globalAlpha=.5; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+w,y); ctx.stroke(); ctx.globalAlpha=1;
-    const mmV=(maxP*(1-g/4)); ctx.textAlign="right"; ctx.fillText(mmV.toFixed(mmV<1?1:0), padL-6, y+3);
-    const pV=Math.round(100*(1-g/4)); ctx.textAlign="left"; ctx.fillText(pV+"%", padL+w+6, y+3);
+  const start=Math.max(0, idx.nowIdx-12), end=Math.min(d.hourly.time.length-1, idx.nowIdx+12);
+  const times=[], precip=[], prob=[], past=[];
+  for(let i=start;i<=end;i++){
+    times.push(d.hourly.time[i]);
+    precip.push(d.hourly.precipitation[i]||0);
+    prob.push(d.hourly.precipitation_probability[i]||0);
+    past.push(i<idx.nowIdx);
   }
+  const nowPos = idx.nowIdx - start;               // columna de "ahora"
+  const N=times.length, hourW=54, padT=16, padB=40;
+  const H=240, plotH=H-padT-padB;
+  const cssW=N*hourW;
+  const dpr=window.devicePixelRatio||1;
+  cv.style.width=cssW+"px"; cv.style.height=H+"px"; cv.width=cssW*dpr; cv.height=H*dpr;
+  const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,cssW,H);
+  const st=getComputedStyle(document.documentElement);
+  const cRain=st.getPropertyValue("--rain").trim(), cPast=st.getPropertyValue("--rainpast").trim(),
+        cProb=st.getPropertyValue("--prob").trim(), cLine=st.getPropertyValue("--line").trim(),
+        cMuted=st.getPropertyValue("--muted").trim(), cAccent=st.getPropertyValue("--accent").trim();
+  const maxP=Math.max(0.5, Math.max(...precip)*1.25);
 
-  // Barras de lluvia (mm)
-  const barGap=6, barW=(w/N)-barGap;
+  // rejilla horizontal
+  ctx.strokeStyle=cLine; ctx.lineWidth=1;
+  for(let g=0;g<=4;g++){ const y=padT+plotH*g/4; ctx.globalAlpha=.5; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cssW,y); ctx.stroke(); }
+  ctx.globalAlpha=1;
+  // sombreado del pasado
+  ctx.fillStyle=cLine; ctx.globalAlpha=.18; ctx.fillRect(0,padT, nowPos*hourW, plotH); ctx.globalAlpha=1;
+
+  // barras de lluvia
+  const barW=hourW*0.56;
   precip.forEach((v,i)=>{
-    const x=padL + i*(w/N) + barGap/2;
-    const bh=(v/maxP)*h;
-    ctx.fillStyle=cRain; ctx.globalAlpha=v>0?0.9:0.15;
-    const yy=padT+h-Math.max(bh, v>0?2:1);
-    roundRect(ctx, x, yy, barW, Math.max(bh, v>0?2:1), 4); ctx.fill();
+    const x=i*hourW+(hourW-barW)/2, bh=(v/maxP)*plotH;
+    ctx.fillStyle = past[i]?cPast:cRain; ctx.globalAlpha=v>0?0.95:0.12;
+    const h=Math.max(bh, v>0?2:1); roundRect(ctx, x, padT+plotH-h, barW, h, 4); ctx.fill();
   });
   ctx.globalAlpha=1;
 
-  // Línea de probabilidad (%)
-  ctx.strokeStyle=cProb; ctx.lineWidth=2.5; ctx.beginPath();
-  prob.forEach((p,i)=>{
-    const x=padL + i*(w/N) + (w/N)/2;
-    const y=padT + h*(1 - p/100);
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  prob.forEach((p,i)=>{
-    const x=padL + i*(w/N) + (w/N)/2;
-    const y=padT + h*(1 - p/100);
-    ctx.fillStyle=cProb; ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fill();
-  });
+  // línea de probabilidad
+  ctx.lineWidth=2.5;
+  const px=(i)=>i*hourW+hourW/2, py=(p)=>padT+plotH*(1-p/100);
+  ctx.strokeStyle=cProb; ctx.globalAlpha=.45; ctx.beginPath();
+  for(let i=0;i<=nowPos;i++){ i===0?ctx.moveTo(px(i),py(prob[i])):ctx.lineTo(px(i),py(prob[i])); } ctx.stroke();
+  ctx.globalAlpha=1; ctx.beginPath();
+  for(let i=nowPos;i<N;i++){ i===nowPos?ctx.moveTo(px(i),py(prob[i])):ctx.lineTo(px(i),py(prob[i])); } ctx.stroke();
+  prob.forEach((p,i)=>{ ctx.fillStyle=cProb; ctx.globalAlpha=past[i]?.5:1; ctx.beginPath(); ctx.arc(px(i),py(p),3,0,7); ctx.fill(); });
+  ctx.globalAlpha=1;
 
-  // Etiquetas de tiempo
-  ctx.fillStyle=cMuted; ctx.textAlign="center"; ctx.font="10px "+style.getPropertyValue("--font");
-  times.forEach((t,i)=>{
-    if(i%2!==0 && N>6) return;
-    const dt=new Date(t); const lbl=String(dt.getHours()).padStart(2,"0")+":"+String(dt.getMinutes()).padStart(2,"0");
-    const x=padL + i*(w/N) + (w/N)/2;
-    ctx.fillText(lbl, x, cssH-12);
-  });
+  // marcador AHORA
+  const nx=nowPos*hourW+hourW/2;
+  ctx.strokeStyle=cAccent; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(nx,padT-4); ctx.lineTo(nx,padT+plotH); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle=cAccent; ctx.font="600 11px "+st.getPropertyValue("--font"); ctx.textAlign="center";
+  ctx.fillText("AHORA", nx, padT-6);
+
+  // etiquetas de hora
+  ctx.fillStyle=cMuted; ctx.font="10px "+st.getPropertyValue("--font"); ctx.textAlign="center";
+  times.forEach((t,i)=>{ const hh=t.slice(11,13); ctx.fillText(hh+"h", i*hourW+hourW/2, H-14); });
+
+  // ejes fijos (mm izq, % der)
+  const yl=$("yLeft"), yr=$("yRight"); yl.innerHTML=""; yr.innerHTML="";
+  for(let g=0;g<=4;g++){
+    const y=padT+plotH*g/4-6, mm=maxP*(1-g/4), pc=Math.round(100*(1-g/4));
+    const l=document.createElement("span"); l.style.top=y+"px"; l.textContent=(mm<1?mm.toFixed(1):Math.round(mm)); yl.appendChild(l);
+    const rr=document.createElement("span"); rr.style.top=y+"px"; rr.textContent=pc+"%"; yr.appendChild(rr);
+  }
+  // centrar "ahora"
+  requestAnimationFrame(()=>{ scroll.scrollLeft = Math.max(0, nx - scroll.clientWidth/2); });
 }
-function roundRect(ctx,x,y,w,h,r){
-  r=Math.min(r,w/2,h/2); if(r<0)r=0;
-  ctx.beginPath();
-  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
-}
+function roundRect(ctx,x,y,w,h,r){ r=Math.min(r,w/2,h/2); if(r<0)r=0;
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 window.addEventListener("resize", ()=>{ if(CURRENT_DATA) renderPrecipChart(CURRENT_DATA); });
 
-/* ====================== Radar (Leaflet + RainViewer) ====================== */
+/* ---- Radar + capas ---- */
 let radarState = { frames:[], idx:0, layers:{}, playing:true, timer:null, host:"" };
-
 function initOrMoveRadar(){
   const zoom=10;
   if(!STATE.map){
     STATE.map = L.map("radar", { zoomControl:true, attributionControl:false }).setView([STATE.lat,STATE.lon], zoom);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      maxZoom:19, subdomains:"abcd"
-    }).addTo(STATE.map);
-    L.control.attribution({prefix:false}).addAttribution('© OpenStreetMap, © CARTO').addTo(STATE.map);
+    const mapa = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      {maxZoom:20, subdomains:"abcd"});
+    const sat = L.layerGroup([
+      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {maxZoom:19}),
+      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+        {maxZoom:19, opacity:0.9})
+    ]);
+    mapa.addTo(STATE.map);
+    STATE.radarLayerGroup = L.layerGroup().addTo(STATE.map);
+    L.control.attribution({prefix:false}).addAttribution('© OpenStreetMap, © CARTO, © Esri').addTo(STATE.map);
+    L.control.layers({"Mapa":mapa,"Satélite":sat}, null, {position:"topright"}).addTo(STATE.map);
     STATE.marker = L.circleMarker([STATE.lat,STATE.lon], {radius:7,color:"#fff",weight:2,fillColor:"#4f9dff",fillOpacity:1}).addTo(STATE.map);
     loadRadarFrames();
     $("radarPlay").addEventListener("click", toggleRadarPlay);
@@ -596,93 +602,54 @@ function initOrMoveRadar(){
     STATE.marker.setLatLng([STATE.lat,STATE.lon]);
   }
 }
-
 async function loadRadarFrames(){
   try{
-    const r=await fetch("https://api.rainviewer.com/public/weather-maps.json");
-    const d=await r.json();
+    const r=await fetch("https://api.rainviewer.com/public/weather-maps.json"); const d=await r.json();
     radarState.host=d.host;
-    const past=(d.radar&&d.radar.past)||[];
-    const now=(d.radar&&d.radar.nowcast)||[];
-    radarState.frames=[...past, ...now];
+    const p=(d.radar&&d.radar.past)||[], n=(d.radar&&d.radar.nowcast)||[];
+    radarState.frames=[...p, ...n];
     if(!radarState.frames.length){ $("radarTime").textContent="Radar no disponible"; return; }
-    radarState.idx=Math.max(0, past.length-1);
-    showRadarFrame(radarState.idx);
-    startRadarLoop();
+    radarState.idx=Math.max(0, p.length-1); showRadarFrame(radarState.idx); startRadarLoop();
   }catch(e){ $("radarTime").textContent="Radar no disponible"; }
 }
-
 function frameLayer(frame){
   if(radarState.layers[frame.time]) return radarState.layers[frame.time];
-  // color scheme 4 (Universal Blue→Red), smooth=1, snow=1
   const url=`${radarState.host}${frame.path}/256/{z}/{x}/{y}/4/1_1.png`;
-  const layer=L.tileLayer(url, {opacity:0, tileSize:256, zIndex:400, maxNativeZoom:7, maxZoom:19});
-  layer.addTo(STATE.map);
-  radarState.layers[frame.time]=layer;
-  return layer;
+  const layer=L.tileLayer(url, {opacity:0, tileSize:256, zIndex:400, maxNativeZoom:7, maxZoom:20});
+  STATE.radarLayerGroup.addLayer(layer);
+  radarState.layers[frame.time]=layer; return layer;
 }
-
 function showRadarFrame(i){
   const f=radarState.frames[i]; if(!f) return;
   Object.values(radarState.layers).forEach(l=>l.setOpacity(0));
-  const layer=frameLayer(f);
-  layer.setOpacity(0.72);
-  const dt=new Date(f.time*1000);
-  const hh=String(dt.getHours()).padStart(2,"0"), mm=String(dt.getMinutes()).padStart(2,"0");
-  const past=(i < radarState.frames.length) && f.time*1000 <= Date.now();
-  $("radarTime").textContent = (past?"":"pronóstico ")+`${hh}:${mm}`;
+  frameLayer(f).setOpacity(0.68);
+  const dt=new Date(f.time*1000), hh=String(dt.getHours()).padStart(2,"0"), mm=String(dt.getMinutes()).padStart(2,"0");
+  const isPast=f.time*1000<=Date.now();
+  $("radarTime").textContent=(isPast?"":"pronóstico ")+`${hh}:${mm}`;
 }
+function startRadarLoop(){ clearInterval(radarState.timer);
+  radarState.timer=setInterval(()=>{ if(!radarState.playing) return;
+    radarState.idx=(radarState.idx+1)%radarState.frames.length; showRadarFrame(radarState.idx); }, 700); }
+function toggleRadarPlay(){ radarState.playing=!radarState.playing; $("radarPlay").textContent=radarState.playing?"⏸️":"▶️"; }
 
-function startRadarLoop(){
-  clearInterval(radarState.timer);
-  radarState.timer=setInterval(()=>{
-    if(!radarState.playing) return;
-    radarState.idx=(radarState.idx+1)%radarState.frames.length;
-    showRadarFrame(radarState.idx);
-  }, 700);
-}
-function toggleRadarPlay(){
-  radarState.playing=!radarState.playing;
-  $("radarPlay").textContent = radarState.playing ? "⏸️" : "▶️";
-}
-
-/* ====================== Arranque ====================== */
+/* ---- Arranque ---- */
 (function boot(){
-  // Intento de restaurar última ubicación
-  let last=null;
-  try{ last=JSON.parse(localStorage.getItem(LS_KEY)); }catch(e){}
-
-  // Siempre intentamos geolocalización precisa primero (silenciosa si ya hay permiso)
+  let last=null; try{ last=JSON.parse(localStorage.getItem(LS_KEY)); }catch(e){}
   if("permissions" in navigator && navigator.permissions.query){
     navigator.permissions.query({name:"geolocation"}).then(p=>{
-      if(p.state==="granted"){ requestPreciseSilently(last); }
-      else if(last){ setLocation(last.lat,last.lon,last.name); maybePromptPrecise(); }
-      else { showOverlay(""); autoTryGeo(); }
+      if(p.state==="granted") requestPreciseSilently(last);
+      else if(last){ setLocation(last.lat,last.lon,last.name); }
+      else { showOverlay(""); requestPreciseLocation(); }
     }).catch(()=>fallbackBoot(last));
-  } else {
-    fallbackBoot(last);
-  }
+  } else fallbackBoot(last);
 })();
-
-function fallbackBoot(last){
-  if(last){ setLocation(last.lat,last.lon,last.name); }
-  else { showOverlay(""); autoTryGeo(); }
-}
-function autoTryGeo(){
-  // Lanza la solicitud del navegador automáticamente al cargar
-  requestPreciseLocation();
-}
-function maybePromptPrecise(){ /* ya tenemos ubicación previa; el usuario puede pulsar Cambiar */ }
-
+function fallbackBoot(last){ if(last) setLocation(last.lat,last.lon,last.name); else { showOverlay(""); requestPreciseLocation(); } }
 function requestPreciseSilently(last){
   if(!("geolocation" in navigator)){ if(last) setLocation(last.lat,last.lon,last.name); else showOverlay(""); return; }
   $("locName").textContent="Detectando ubicación…";
   navigator.geolocation.getCurrentPosition(
-    async (pos)=>{
-      const name=await reverseGeocode(pos.coords.latitude,pos.coords.longitude);
-      setLocation(pos.coords.latitude,pos.coords.longitude,name||"Mi ubicación");
-    },
-    ()=>{ if(last) setLocation(last.lat,last.lon,last.name); else { showOverlay("No se pudo obtener la ubicación.", true);} },
+    async (pos)=>{ const name=await reverseGeocode(pos.coords.latitude,pos.coords.longitude); setLocation(pos.coords.latitude,pos.coords.longitude,name||"Mi ubicación"); },
+    ()=>{ if(last) setLocation(last.lat,last.lon,last.name); else showOverlay("No se pudo obtener la ubicación.", true); },
     { enableHighAccuracy:true, timeout:12000, maximumAge:600000 }
   );
 }
