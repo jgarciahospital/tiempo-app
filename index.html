@@ -259,16 +259,14 @@
 
   <div class="section-title">
     <h2>Pronóstico extendido</h2>
-    <span class="hint">próximos 15 días · toca un día para ver el detalle</span>
   </div>
   <section class="card carousel-wrap">
     <div class="days-carousel" id="days"><div class="chart-empty">Cargando pronóstico…</div></div>
     <div class="fade-right" id="fadeRight">›</div>
   </section>
-  <div class="swipe-note" id="swipeNote" style="display:none">Desliza para ver más días →</div>
 
   <!-- 3) GRÁFICA DE PRECIPITACIÓN ±12h -->
-  <div class="section-title"><h2>Precipitación</h2><span class="hint">±12 h · desliza · probabilidad y cantidad son medidas distintas</span></div>
+  <div class="section-title"><h2>Precipitación</h2></div>
   <section class="card chart-card">
     <div class="chart-legend">
       <span class="lg"><span class="swatch" style="background:var(--rainpast)"></span> Lluvia pasada (mm)</span>
@@ -282,7 +280,7 @@
   </section>
 
   <!-- 4) RADAR -->
-  <div class="section-title"><h2>Radar meteorológico</h2><span class="hint">capa Mapa / Satélite · radar animado</span></div>
+  <div class="section-title"><h2>Radar meteorológico</h2></div>
   <section class="card" style="padding:6px">
     <div id="radar">
       <div class="radar-controls">
@@ -571,10 +569,9 @@ function renderDays(d, n){
   updateCarouselUI();
 }
 function updateCarouselUI(){
-  const c=$("days"), fade=$("fadeRight"), note=$("swipeNote");
+  const c=$("days"), fade=$("fadeRight");
   const scrollable = c.scrollWidth > c.clientWidth + 4;
   c.style.justifyContent = scrollable ? "flex-start" : "center";
-  note.style.display = scrollable ? "block" : "none";
   const atEnd = c.scrollLeft + c.clientWidth >= c.scrollWidth - 6;
   fade.classList.toggle("show", scrollable && !atEnd);
 }
