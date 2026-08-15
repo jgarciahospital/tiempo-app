@@ -49,26 +49,26 @@
   .btn.primary{background:var(--accent);color:#04122b;border-color:transparent;font-weight:600}
   .btn.primary:hover{filter:brightness(1.06);color:#04122b}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-  .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 4px 12px;flex-wrap:wrap}
+  .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 4px 8px;flex-wrap:wrap}
   .section-title h2{font-size:1.02rem;margin:0;letter-spacing:.2px}
   .section-title .hint{color:var(--muted);font-size:.8rem}
 
   /* ---- Héroe ---- */
-  .hero{padding:20px;display:flex;flex-direction:column;gap:16px}
-  .hero-main{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
-  .hero .now{display:flex;align-items:center;gap:16px;padding:4px 2px}
-  .hero .now .ico{width:66px;height:66px;display:flex;align-items:center;justify-content:center;flex:none}
+  .hero{padding:14px;display:flex;flex-direction:column;gap:11px}
+  .hero-main{display:grid;grid-template-columns:1fr 1fr;gap:11px;align-items:stretch}
+  .hero .now{display:flex;align-items:center;gap:13px;padding:2px}
+  .hero .now .ico{width:52px;height:52px;display:flex;align-items:center;justify-content:center;flex:none}
   .wi{display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.28))}
-  .hero .now .temp{font-size:3.4rem;font-weight:700;line-height:1}
-  .hero .now .desc{color:var(--muted);margin-top:2px}
-  .hero .now .minmax{margin-top:8px;display:flex;gap:16px;font-size:1.12rem}
+  .hero .now .temp{font-size:2.6rem;font-weight:700;line-height:1}
+  .hero .now .desc{color:var(--muted);margin-top:1px;font-size:.9rem}
+  .hero .now .minmax{margin-top:5px;display:flex;gap:14px;font-size:.98rem}
   .hero .now .minmax .mx{color:var(--warn)}
   .hero .now .minmax .mn{color:var(--accent2)}
   .hero .now .minmax b{font-weight:700}
-  .hero .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .metric{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
-  .metric .k{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.6px}
-  .metric .v{font-size:1.2rem;font-weight:600;margin-top:2px}
+  .hero .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .metric{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:7px 10px}
+  .metric .k{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.5px}
+  .metric .v{font-size:1.02rem;font-weight:600;margin-top:1px}
   @media (max-width:720px){ .hero-main{grid-template-columns:1fr} }
 
   .range-tabs{display:flex;gap:6px}
@@ -112,57 +112,58 @@
   .swipe-note{text-align:center;color:var(--muted);font-size:.78rem;margin:8px 4px 0}
 
   /* ---- Probabilidad de lluvia ---- */
-  .rain-now{display:flex;align-items:center;gap:14px;background:var(--card2);
-    border:1px solid var(--line);border-radius:14px;padding:12px 16px}
-  .gauge{position:relative;width:88px;height:88px;flex:none}
-  .gauge svg{transform:rotate(-90deg)}
-  .gauge .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.18rem}
+  .rain-now{display:flex;align-items:center;gap:12px;background:var(--card2);
+    border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+  .gauge{position:relative;width:68px;height:68px;flex:none}
+  .gauge svg{transform:rotate(-90deg);width:100%;height:100%}
+  .gauge .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem}
   .rain-now .txt{min-width:0}
-  .rain-now .txt .k{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
-  .rain-now .txt .big{font-size:1.02rem;font-weight:600;line-height:1.25}
-  .rain-now .txt .sub{color:var(--muted);margin-top:3px;font-size:.86rem;line-height:1.3}
-  .rain-now .txt .rn-hint{color:var(--muted);font-size:.78rem;margin-top:6px}
+  .rain-now .txt .k{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:1px}
+  .rain-now .txt .big{font-size:.95rem;font-weight:600;line-height:1.2}
+  .rain-now .txt .sub{color:var(--muted);margin-top:2px;font-size:.8rem;line-height:1.25}
+  .rain-now .txt .rn-hint{color:var(--muted);font-size:.74rem;margin-top:4px}
 
   /* ---- Hora a hora (pestañas) ---- */
   .hourly{padding:0}
-  .hourly-tabs{display:flex;gap:24px;padding:14px 18px 0;border-bottom:1px solid var(--line)}
-  .hourly-tabs button{background:none;border:none;border-radius:0;padding:0 0 12px;color:var(--muted);
-    font-size:.95rem;font-weight:600;border-bottom:2px solid transparent;position:relative;top:1px}
+  .hourly-tabs{display:flex;gap:22px;padding:10px 16px 0;border-bottom:1px solid var(--line)}
+  .hourly-tabs button{background:none;border:none;border-radius:0;padding:0 0 9px;color:var(--muted);
+    font-size:.9rem;font-weight:600;border-bottom:2px solid transparent;position:relative;top:1px}
   .hourly-tabs button:hover{color:var(--ink);border-color:transparent}
   .hourly-tabs button.active{color:var(--ink);border-bottom-color:var(--accent)}
   .hourly-panel{display:none}
   .hourly-panel.active{display:block}
 
   /* ---- Gráficas por horas ---- */
-  .chart-card{padding:12px 0 6px;position:relative}
-  .chart-legend{display:flex;gap:16px;padding:0 16px 8px;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
+  .chart-card{padding:8px 0 4px;position:relative}
+  .chart-legend{display:flex;gap:14px;padding:0 14px 6px;flex-wrap:wrap;font-size:.76rem;color:var(--muted)}
   .chart-legend .lg{display:flex;align-items:center;gap:6px}
   .swatch{width:12px;height:12px;border-radius:3px}
   .chart-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;position:relative}
   .chart-scroll::-webkit-scrollbar{height:8px}
   .chart-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
-  #precipChart{display:block;height:240px}
-  .yaxis{position:absolute;top:12px;height:240px;width:38px;pointer-events:none;z-index:3}
+  #precipChart{display:block;height:196px}
+  .yaxis{position:absolute;top:8px;height:196px;width:38px;pointer-events:none;z-index:3}
   .yaxis.left{left:0;background:linear-gradient(90deg,var(--card) 70%,transparent)}
   .yaxis.right{right:0;background:linear-gradient(270deg,var(--card) 70%,transparent);text-align:right}
   .yaxis span{position:absolute;font-size:10px;color:var(--muted);left:4px;right:4px}
   .chart-empty{padding:26px;text-align:center;color:var(--muted)}
 
-  /* ---- Concordancia de modelos ---- */
-  .consensus{padding:16px 18px}
-  .cs-head{display:flex;align-items:center;gap:16px}
-  .cs-badge{flex:none;min-width:74px;text-align:center;padding:10px 8px;border-radius:14px;font-weight:700;
-    font-size:.82rem;line-height:1.25;border:1px solid var(--line);background:var(--card2)}
-  .cs-badge .lvl{display:block;font-size:1rem}
+  /* ---- Concordancia de modelos (compacto) ---- */
+  .consensus{padding:10px 12px;opacity:.9}
+  .cs-hdr{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:7px}
+  .cs-head{display:flex;align-items:center;gap:10px}
+  .cs-badge{flex:none;text-align:center;padding:3px 8px;border-radius:999px;font-weight:700;
+    font-size:.62rem;text-transform:uppercase;letter-spacing:.3px;border:1px solid var(--line);background:var(--card2)}
+  .cs-badge .lvl{display:inline;font-size:.62rem;margin-left:3px}
   .cs-badge.alta{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
   .cs-badge.media{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
   .cs-badge.baja{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent)}
-  .cs-title{font-size:1.02rem;font-weight:600;line-height:1.3}
-  .cs-sub{color:var(--muted);font-size:.88rem;margin-top:3px;line-height:1.35}
-  .cs-models{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-  .cs-m{display:flex;align-items:center;gap:7px;background:var(--card2);border:1px solid var(--line);
-    border-radius:999px;padding:6px 11px;font-size:.82rem}
-  .cs-m .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .cs-title{font-size:.84rem;font-weight:600;line-height:1.25}
+  .cs-sub{color:var(--muted);font-size:.76rem;margin-top:1px;line-height:1.3}
+  .cs-models{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .cs-m{display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--line);
+    border-radius:999px;padding:3px 8px;font-size:.72rem}
+  .cs-m .dot{width:6px;height:6px;border-radius:50%;flex:none}
   .cs-m .dot.rain{background:var(--rain)} .cs-m .dot.dry{background:var(--muted)} .cs-m .dot.na{background:var(--line)}
   .cs-m .nm{font-weight:600} .cs-m .vals{color:var(--muted)}
 
@@ -334,19 +335,6 @@
     <div class="fade-right" id="fadeRight">›</div>
   </section>
 
-  <!-- 3b) CONCORDANCIA DE MODELOS -->
-  <div class="section-title" id="csSection"><h2>Concordancia de modelos</h2></div>
-  <section class="card consensus" id="consensus">
-    <div class="cs-head">
-      <div class="cs-badge" id="csBadge">—</div>
-      <div class="cs-text">
-        <div class="cs-title" id="csTitle">Calculando…</div>
-        <div class="cs-sub" id="csSub"></div>
-      </div>
-    </div>
-    <div class="cs-models" id="csModels"></div>
-  </section>
-
   <!-- 4) RADAR -->
   <div class="section-title"><h2>Radar meteorológico</h2></div>
   <section class="card" style="padding:6px">
@@ -360,6 +348,19 @@
         <div class="ends"><span>débil</span><span>fuerte</span></div>
       </div>
     </div>
+  </section>
+
+  <!-- CONCORDANCIA DE MODELOS (compacto, al final) -->
+  <section class="card consensus" id="consensus">
+    <div class="cs-hdr">Concordancia entre modelos</div>
+    <div class="cs-head">
+      <div class="cs-badge" id="csBadge">—</div>
+      <div class="cs-text">
+        <div class="cs-title" id="csTitle">Calculando…</div>
+        <div class="cs-sub" id="csSub"></div>
+      </div>
+    </div>
+    <div class="cs-models" id="csModels"></div>
   </section>
 
   <footer>
@@ -818,8 +819,8 @@ function renderPrecipChart(d){
     past.push(i<idx.nowIdx);
   }
   const nowPos = idx.nowIdx - start;               // columna de "ahora"
-  const N=times.length, hourW=54, padT=16, padB=40;
-  const H=240, plotH=H-padT-padB;
+  const N=times.length, hourW=54, padT=14, padB=34;
+  const H=196, plotH=H-padT-padB;
   const cssW=N*hourW;
   const dpr=window.devicePixelRatio||1;
   cv.style.width=cssW+"px"; cv.style.height=H+"px"; cv.width=cssW*dpr; cv.height=H*dpr;
@@ -954,7 +955,7 @@ function renderWindChart(d){
 
 function drawSeriesChart(cv, scroll, yL, yR, cfg){
   const {times,past,nowPos,primary:p,secondary:s,sub}=cfg;
-  const N=times.length, hourW=54, padT=16, padB=sub?52:40, H=sub?252:240, plotH=H-padT-padB;
+  const N=times.length, hourW=54, padT=14, padB=sub?46:34, H=sub?208:196, plotH=H-padT-padB;
   const dpr=window.devicePixelRatio||1, cssW=N*hourW;
   cv.style.width=cssW+"px"; cv.style.height=H+"px"; cv.width=cssW*dpr; cv.height=H*dpr;
   const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,cssW,H);
@@ -993,7 +994,7 @@ function drawLine(ctx,data,px,yF,color,past,nowPos){
 }
 function fillAxis(el,min,max,unit){
   if(!el) return; el.innerHTML="";
-  const padT=16, plotH=184;
+  const padT=14, plotH=148;
   for(let g=0;g<=4;g++){ const y=padT+plotH*g/4-6, v=max-(max-min)*g/4;
     const sp=document.createElement("span"); sp.style.top=y+"px"; sp.textContent=Math.round(v)+unit; el.appendChild(sp); }
 }
