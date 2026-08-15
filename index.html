@@ -184,6 +184,8 @@
   .dm-row:last-child{border-bottom:none}
   .dm-main{display:grid;grid-template-columns:56px 34px 1fr 62px 66px;gap:10px;align-items:center}
   .dm-meta{display:flex;flex-wrap:wrap;gap:14px;padding-left:66px;color:var(--muted);font-size:.78rem}
+  .dm-meta span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .dm-meta .mi{flex:none;display:block}
   .dm-row.now{background:linear-gradient(90deg,rgba(79,157,255,.14),transparent);border-radius:10px;padding-left:6px;margin-left:-6px}
   .dm-row.now .dm-meta{padding-left:60px}
   .dm-time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.9rem}
@@ -605,7 +607,7 @@ function openDayModal(iso){
         +`<span class="dm-prob${prob>0?"":" zero"}">${prob}%</span>`
         +`<span class="dm-mm${mm>0?"":" zero"}">${mm>0?mm.toFixed(1)+" mm":"0"}</span>`
       +`</div>`
-      +`<div class="dm-meta"><span>🌡 ${sens}°</span><span>💨 ${wind} km/h${dir?" "+dir:""}</span><span>💧 ${hum}%</span></div>`
+      +`<div class="dm-meta"><span>${MI.temp} Sens. ${sens}°</span><span>${MI.wind} ${wind} km/h${dir?" "+dir:""}</span><span>${MI.hum} ${hum}%</span></div>`
       +`</div>`;
   }
   body.innerHTML=rows||'<div class="chart-empty">Sin datos horarios para este día.</div>';
@@ -632,6 +634,11 @@ function fmtFullDate(iso){
   return `${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]}`;
 }
 function dirText(deg){ if(deg==null) return ""; const d=["N","NE","E","SE","S","SO","O","NO"]; return d[Math.round(deg/45)%8]; }
+const MI={
+  temp:`<svg class="mi" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M14 14.8V5a2 2 0 1 0-4 0v9.8a3.5 3.5 0 1 0 4 0z" fill="none" stroke="#f87171" stroke-width="1.8"/><circle cx="12" cy="17.8" r="2" fill="#f87171"/></svg>`,
+  wind:`<svg class="mi" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="#9fb0c8" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10a2.4 2.4 0 1 0-2.4-2.4"/><path d="M3 12h14a2.4 2.4 0 1 1-2.4 2.4"/><path d="M3 16h8a2.4 2.4 0 1 1-2.4 2.4"/></svg>`,
+  hum:`<svg class="mi" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 3.2C12 3.2 6 9.7 6 14.4a6 6 0 0 0 12 0C18 9.7 12 3.2 12 3.2z" fill="#38bdf8"/></svg>`
+};
 
 /* ---- Probabilidad ahora ---- */
 function renderRainNow(d){
