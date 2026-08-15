@@ -123,7 +123,17 @@
   .rain-now .txt .sub{color:var(--muted);margin-top:3px;font-size:.86rem;line-height:1.3}
   .rain-now .txt .rn-hint{color:var(--muted);font-size:.78rem;margin-top:6px}
 
-  /* ---- Gráfica precipitación ---- */
+  /* ---- Hora a hora (pestañas) ---- */
+  .hourly{padding:0}
+  .hourly-tabs{display:flex;gap:24px;padding:14px 18px 0;border-bottom:1px solid var(--line)}
+  .hourly-tabs button{background:none;border:none;border-radius:0;padding:0 0 12px;color:var(--muted);
+    font-size:.95rem;font-weight:600;border-bottom:2px solid transparent;position:relative;top:1px}
+  .hourly-tabs button:hover{color:var(--ink);border-color:transparent}
+  .hourly-tabs button.active{color:var(--ink);border-bottom-color:var(--accent)}
+  .hourly-panel{display:none}
+  .hourly-panel.active{display:block}
+
+  /* ---- Gráficas por horas ---- */
   .chart-card{padding:12px 0 6px;position:relative}
   .chart-legend{display:flex;gap:16px;padding:0 16px 8px;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
   .chart-legend .lg{display:flex;align-items:center;gap:6px}
@@ -275,26 +285,53 @@
     </div>
   </section>
 
+  <!-- HORA A HORA: Temperatura (+humedad) / Precipitaciones / Viento -->
+  <div class="section-title"><h2>Por horas</h2></div>
+  <section class="card hourly">
+    <div class="hourly-tabs" id="hourlyTabs">
+      <button data-tab="temp" class="active">Temperatura</button>
+      <button data-tab="precip">Precipitaciones</button>
+      <button data-tab="wind">Viento</button>
+    </div>
+
+    <div class="hourly-panel chart-card active" id="panelTemp">
+      <div class="chart-legend">
+        <span class="lg"><span class="swatch" style="background:var(--warn)"></span> Temperatura (°)</span>
+        <span class="lg"><span class="swatch" style="background:var(--rain)"></span> Humedad (%)</span>
+      </div>
+      <div class="yaxis left" id="yLeftTemp"></div>
+      <div class="yaxis right" id="yRightTemp"></div>
+      <div class="chart-scroll" id="scrollTemp"><canvas id="chartTemp"></canvas></div>
+    </div>
+
+    <div class="hourly-panel chart-card" id="panelPrecip">
+      <div class="chart-legend">
+        <span class="lg"><span class="swatch" style="background:var(--rainpast)"></span> Lluvia pasada (mm)</span>
+        <span class="lg"><span class="swatch" style="background:var(--rain)"></span> Lluvia prevista (mm)</span>
+        <span class="lg"><span class="swatch" style="background:var(--prob)"></span> Probabilidad (%)</span>
+      </div>
+      <div class="yaxis left" id="yLeft"></div>
+      <div class="yaxis right" id="yRight"></div>
+      <div class="chart-scroll" id="chartScroll"><canvas id="precipChart"></canvas></div>
+      <div class="chart-empty" id="chartEmpty" style="display:none"></div>
+    </div>
+
+    <div class="hourly-panel chart-card" id="panelWind">
+      <div class="chart-legend">
+        <span class="lg"><span class="swatch" style="background:var(--accent2)"></span> Viento (km/h)</span>
+        <span class="lg"><span class="swatch" style="background:var(--muted)"></span> Ráfagas (km/h)</span>
+      </div>
+      <div class="yaxis left" id="yLeftWind"></div>
+      <div class="chart-scroll" id="scrollWind"><canvas id="chartWind"></canvas></div>
+    </div>
+  </section>
+
   <div class="section-title">
     <h2>Pronóstico extendido</h2>
   </div>
   <section class="card carousel-wrap">
     <div class="days-carousel" id="days"><div class="chart-empty">Cargando pronóstico…</div></div>
     <div class="fade-right" id="fadeRight">›</div>
-  </section>
-
-  <!-- 3) GRÁFICA DE PRECIPITACIÓN ±12h -->
-  <div class="section-title"><h2>Precipitación</h2></div>
-  <section class="card chart-card">
-    <div class="chart-legend">
-      <span class="lg"><span class="swatch" style="background:var(--rainpast)"></span> Lluvia pasada (mm)</span>
-      <span class="lg"><span class="swatch" style="background:var(--rain)"></span> Lluvia prevista (mm)</span>
-      <span class="lg"><span class="swatch" style="background:var(--prob)"></span> Probabilidad (%)</span>
-    </div>
-    <div class="yaxis left" id="yLeft"></div>
-    <div class="yaxis right" id="yRight"></div>
-    <div class="chart-scroll" id="chartScroll"><canvas id="precipChart"></canvas></div>
-    <div class="chart-empty" id="chartEmpty" style="display:none"></div>
   </section>
 
   <!-- 3b) CONCORDANCIA DE MODELOS -->
@@ -588,7 +625,7 @@ async function loadWeather(){
   const url = "https://api.open-meteo.com/v1/forecast"
     + `?latitude=${lat}&longitude=${lon}`
     + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation,is_day"
-    + "&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,precipitation,precipitation_probability,wind_speed_10m,wind_direction_10m"
+    + "&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,precipitation,precipitation_probability,wind_speed_10m,wind_gusts_10m,wind_direction_10m"
     + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum"
     + "&forecast_days=16&past_days=1&timezone=auto";
   try{
@@ -596,7 +633,7 @@ async function loadWeather(){
     if(d.error) throw new Error(d.reason||"error API");
     d._idx = buildIndex(d);
     CURRENT_DATA=d;
-    renderCurrent(d); renderDays(d, 15); renderRainNow(d); renderPrecipChart(d);
+    renderCurrent(d); renderDays(d, 15); renderRainNow(d); renderHourly(d);
   }catch(e){ toast("No se pudieron cargar los datos meteorológicos."); $("nowDesc").textContent="Error al cargar datos"; }
 }
 
@@ -847,8 +884,119 @@ function renderPrecipChart(d){
 function roundRect(ctx,x,y,w,h,r){ r=Math.min(r,w/2,h/2); if(r<0)r=0;
   ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
   ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
-window.addEventListener("resize", ()=>{ if(CURRENT_DATA){ renderPrecipChart(CURRENT_DATA); updateCarouselUI(); } });
+window.addEventListener("resize", ()=>{ if(CURRENT_DATA){ activateHourlyTab(HOURLY_TAB); updateCarouselUI(); } });
 $("days").addEventListener("scroll", updateCarouselUI);
+
+/* ====================== Hora a hora (pestañas) ====================== */
+let HOURLY_TAB="temp";
+const getVar=(n)=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function buildWindow(d){
+  const idx=d._idx, h=d.hourly;
+  if(!h||!h.time||idx.nowIdx<0) return null;
+  const start=Math.max(0, idx.nowIdx-12), end=Math.min(h.time.length-1, idx.nowIdx+12);
+  const times=[], past=[];
+  for(let i=start;i<=end;i++){ times.push(h.time[i]); past.push(i<idx.nowIdx); }
+  return {start,end,nowPos:idx.nowIdx-start,times,past, val:(k)=>{const a=[];for(let i=start;i<=end;i++)a.push(h[k]?h[k][i]:null);return a;}};
+}
+function renderHourly(d){ renderTempChart(d); renderPrecipChart(d); renderWindChart(d); setDefaultHourlyTab(d); }
+
+function activateHourlyTab(tab){
+  HOURLY_TAB=tab;
+  document.querySelectorAll("#hourlyTabs button").forEach(b=>b.classList.toggle("active", b.dataset.tab===tab));
+  [["temp","panelTemp"],["precip","panelPrecip"],["wind","panelWind"]].forEach(([t,id])=>$(id).classList.toggle("active", t===tab));
+  if(!CURRENT_DATA) return;
+  if(tab==="temp") renderTempChart(CURRENT_DATA);
+  else if(tab==="precip") renderPrecipChart(CURRENT_DATA);
+  else renderWindChart(CURRENT_DATA);
+}
+$("hourlyTabs").addEventListener("click",(e)=>{ if(e.target.tagName==="BUTTON") activateHourlyTab(e.target.dataset.tab); });
+
+function setDefaultHourlyTab(d){
+  const idx=d._idx, h=d.hourly, t=idx.todayIdx;
+  let maxWind=0, maxGust=0, precipSoon=false;
+  const e=Math.min(h.time.length-1, idx.nowIdx+12);
+  for(let i=Math.max(0,idx.nowIdx);i<=e;i++){
+    maxWind=Math.max(maxWind, h.wind_speed_10m[i]||0);
+    if(h.wind_gusts_10m) maxGust=Math.max(maxGust, h.wind_gusts_10m[i]||0);
+    if((h.precipitation_probability[i]||0)>=50 || (h.precipitation[i]||0)>=0.5) precipSoon=true;
+  }
+  const precipToday=(d.daily.precipitation_sum[t]||0)>=1 || (d.daily.precipitation_probability_max[t]||0)>=50;
+  let tab="temp";
+  if(precipSoon || precipToday) tab="precip";
+  else if(maxWind>=40 || maxGust>=55) tab="wind";
+  activateHourlyTab(tab);
+}
+
+function renderTempChart(d){
+  const w=buildWindow(d); if(!w) return;
+  const temp=w.val("temperature_2m"), hum=w.val("relative_humidity_2m").map(v=>v==null?0:v);
+  const tv=temp.filter(v=>v!=null); const tmin=Math.min(...tv), tmax=Math.max(...tv);
+  drawSeriesChart($("chartTemp"),$("scrollTemp"),$("yLeftTemp"),$("yRightTemp"),{
+    times:w.times,past:w.past,nowPos:w.nowPos,
+    primary:{data:temp,color:getVar("--warn"),min:Math.floor(tmin-1),max:Math.ceil(tmax+1),fill:true,unit:"°",showValues:true},
+    secondary:{data:hum,color:getVar("--rain"),min:0,max:100,axis:"right",unit:"%"}
+  });
+}
+function renderWindChart(d){
+  const w=buildWindow(d); if(!w) return;
+  const wind=w.val("wind_speed_10m").map(v=>v==null?0:v);
+  const hasGust=!!d.hourly.wind_gusts_10m;
+  const gust=hasGust? w.val("wind_gusts_10m").map(v=>v==null?0:v):null;
+  const dir=w.val("wind_direction_10m");
+  const maxv=Math.max(10, ...(gust||wind)); const top=Math.ceil(maxv/5)*5;
+  drawSeriesChart($("chartWind"),$("scrollWind"),$("yLeftWind"),null,{
+    times:w.times,past:w.past,nowPos:w.nowPos,
+    primary:{data:wind,color:getVar("--accent2"),min:0,max:top,fill:true,unit:"",showValues:true},
+    secondary: gust?{data:gust,color:getVar("--muted"),min:0,max:top,axis:"left"}:null,
+    sub:(i)=>dirText(dir[i])
+  });
+}
+
+function drawSeriesChart(cv, scroll, yL, yR, cfg){
+  const {times,past,nowPos,primary:p,secondary:s,sub}=cfg;
+  const N=times.length, hourW=54, padT=16, padB=sub?52:40, H=sub?252:240, plotH=H-padT-padB;
+  const dpr=window.devicePixelRatio||1, cssW=N*hourW;
+  cv.style.width=cssW+"px"; cv.style.height=H+"px"; cv.width=cssW*dpr; cv.height=H*dpr;
+  const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,cssW,H);
+  const font=getVar("--font"), cLine=getVar("--line"), cMuted=getVar("--muted"), cAccent=getVar("--accent"), cInk=getVar("--ink");
+  ctx.strokeStyle=cLine; ctx.lineWidth=1;
+  for(let g=0;g<=4;g++){const y=padT+plotH*g/4; ctx.globalAlpha=.5; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cssW,y); ctx.stroke();}
+  ctx.globalAlpha=1;
+  ctx.fillStyle=cLine; ctx.globalAlpha=.18; ctx.fillRect(0,padT,nowPos*hourW,plotH); ctx.globalAlpha=1;
+  const px=(i)=>i*hourW+hourW/2, mapY=(v,mn,mx)=>padT+plotH*(1-(v-mn)/((mx-mn)||1));
+  const yP=(v)=>mapY(v,p.min,p.max);
+  if(p.fill){
+    ctx.fillStyle=p.color; ctx.globalAlpha=.14; ctx.beginPath(); let st0=false;
+    for(let i=0;i<N;i++){ if(p.data[i]==null) continue; const x=px(i),y=yP(p.data[i]); if(!st0){ctx.moveTo(x,padT+plotH);ctx.lineTo(x,y);st0=true;} else ctx.lineTo(x,y); }
+    ctx.lineTo(px(N-1),padT+plotH); ctx.closePath(); ctx.fill(); ctx.globalAlpha=1;
+  }
+  drawLine(ctx,p.data,px,yP,p.color,past,nowPos);
+  if(s){ const yS=(v)=>mapY(v,s.min,s.max); drawLine(ctx,s.data,px,yS,s.color,past,nowPos); }
+  if(p.showValues){ ctx.fillStyle=cInk; ctx.font="600 10px "+font; ctx.textAlign="center";
+    for(let i=0;i<N;i+=3){ if(p.data[i]==null) continue; ctx.fillText(Math.round(p.data[i])+(p.unit||""), px(i), yP(p.data[i])-8); } }
+  const nx=px(nowPos); ctx.strokeStyle=cAccent; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(nx,padT-4); ctx.lineTo(nx,padT+plotH); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle=cAccent; ctx.font="600 11px "+font; ctx.textAlign="center"; ctx.fillText("AHORA",nx,padT-6);
+  ctx.fillStyle=cMuted; ctx.font="10px "+font; ctx.textAlign="center";
+  times.forEach((t,i)=>{ ctx.fillText(t.slice(11,13)+"h", px(i), H-(sub?28:14)); if(sub){ const sv=sub(i); if(sv) ctx.fillText(sv, px(i), H-12); } });
+  fillAxis(yL, p.min, p.max, p.unit||"");
+  if(yR){ if(s && s.axis==="right") fillAxis(yR, s.min, s.max, s.unit||""); else yR.innerHTML=""; }
+  requestAnimationFrame(()=>{ scroll.scrollLeft=Math.max(0, nx - scroll.clientWidth/2); });
+}
+function drawLine(ctx,data,px,yF,color,past,nowPos){
+  ctx.lineWidth=2.5; ctx.strokeStyle=color;
+  ctx.globalAlpha=.45; ctx.beginPath(); let started=false;
+  for(let i=0;i<=nowPos;i++){ if(data[i]==null) continue; const x=px(i),y=yF(data[i]); started?ctx.lineTo(x,y):(ctx.moveTo(x,y),started=true); } ctx.stroke();
+  ctx.globalAlpha=1; ctx.beginPath(); started=false;
+  for(let i=nowPos;i<data.length;i++){ if(data[i]==null) continue; const x=px(i),y=yF(data[i]); started?ctx.lineTo(x,y):(ctx.moveTo(x,y),started=true); } ctx.stroke();
+  data.forEach((v,i)=>{ if(v==null) return; ctx.fillStyle=color; ctx.globalAlpha=past[i]?.5:1; ctx.beginPath(); ctx.arc(px(i),yF(v),2.6,0,7); ctx.fill(); }); ctx.globalAlpha=1;
+}
+function fillAxis(el,min,max,unit){
+  if(!el) return; el.innerHTML="";
+  const padT=16, plotH=184;
+  for(let g=0;g<=4;g++){ const y=padT+plotH*g/4-6, v=max-(max-min)*g/4;
+    const sp=document.createElement("span"); sp.style.top=y+"px"; sp.textContent=Math.round(v)+unit; el.appendChild(sp); }
+}
 
 /* ---- Radar + capas ---- */
 let radarState = { frames:[], idx:0, layers:{}, playing:true, timer:null, host:"" };
