@@ -138,6 +138,24 @@
   .yaxis span{position:absolute;font-size:10px;color:var(--muted);left:4px;right:4px}
   .chart-empty{padding:26px;text-align:center;color:var(--muted)}
 
+  /* ---- Concordancia de modelos ---- */
+  .consensus{padding:16px 18px}
+  .cs-head{display:flex;align-items:center;gap:16px}
+  .cs-badge{flex:none;min-width:74px;text-align:center;padding:10px 8px;border-radius:14px;font-weight:700;
+    font-size:.82rem;line-height:1.25;border:1px solid var(--line);background:var(--card2)}
+  .cs-badge .lvl{display:block;font-size:1rem}
+  .cs-badge.alta{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+  .cs-badge.media{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+  .cs-badge.baja{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent)}
+  .cs-title{font-size:1.02rem;font-weight:600;line-height:1.3}
+  .cs-sub{color:var(--muted);font-size:.88rem;margin-top:3px;line-height:1.35}
+  .cs-models{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .cs-m{display:flex;align-items:center;gap:7px;background:var(--card2);border:1px solid var(--line);
+    border-radius:999px;padding:6px 11px;font-size:.82rem}
+  .cs-m .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .cs-m .dot.rain{background:var(--rain)} .cs-m .dot.dry{background:var(--muted)} .cs-m .dot.na{background:var(--line)}
+  .cs-m .nm{font-weight:600} .cs-m .vals{color:var(--muted)}
+
   /* ---- Radar ---- */
   #radar{height:440px;border-radius:var(--radius);overflow:hidden;position:relative}
   .radar-controls{
@@ -277,6 +295,19 @@
     <div class="yaxis right" id="yRight"></div>
     <div class="chart-scroll" id="chartScroll"><canvas id="precipChart"></canvas></div>
     <div class="chart-empty" id="chartEmpty" style="display:none"></div>
+  </section>
+
+  <!-- 3b) CONCORDANCIA DE MODELOS -->
+  <div class="section-title" id="csSection"><h2>Concordancia de modelos</h2></div>
+  <section class="card consensus" id="consensus">
+    <div class="cs-head">
+      <div class="cs-badge" id="csBadge">—</div>
+      <div class="cs-text">
+        <div class="cs-title" id="csTitle">Calculando…</div>
+        <div class="cs-sub" id="csSub"></div>
+      </div>
+    </div>
+    <div class="cs-models" id="csModels"></div>
   </section>
 
   <!-- 4) RADAR -->
@@ -482,7 +513,73 @@ function setLocation(lat, lon, name){
   STATE.lat=lat; STATE.lon=lon; STATE.name=name;
   $("locName").textContent = name; document.title = `El Tiempo · ${name}`;
   try{ localStorage.setItem(LS_KEY, JSON.stringify({lat,lon,name})); }catch(e){}
-  loadWeather(); initOrMoveRadar();
+  loadWeather(); loadConsensus(lat,lon); initOrMoveRadar();
+}
+
+/* ---- Concordancia entre modelos meteorológicos (foco en precipitación) ---- */
+const MODELS=[
+  {id:"ecmwf_ifs025", name:"ECMWF", who:"Europa"},
+  {id:"gfs_seamless", name:"GFS", who:"EE. UU."},
+  {id:"icon_seamless", name:"ICON", who:"Alemania"},
+  {id:"gem_seamless", name:"GEM", who:"Canadá"},
+  {id:"meteofrance_seamless", name:"Météo-France", who:"Francia"}
+];
+const fmtMM=(v)=>(v==null?0:v).toFixed(1)+" mm";
+function hideConsensus(){ const s=$("consensus"), t=$("csSection"); if(s)s.style.display="none"; if(t)t.style.display="none"; }
+function showConsensus(){ const s=$("consensus"), t=$("csSection"); if(s)s.style.display=""; if(t)t.style.display=""; }
+
+async function loadConsensus(lat,lon){
+  const ids=MODELS.map(m=>m.id).join(",");
+  const url="https://api.open-meteo.com/v1/forecast"
+    +`?latitude=${lat}&longitude=${lon}`
+    +"&daily=precipitation_sum,precipitation_probability_max&forecast_days=1&timezone=auto"
+    +`&models=${ids}`;
+  try{
+    const r=await fetch(url); const d=await r.json(); if(d.error) throw 0;
+    const dl=d.daily||{};
+    const rows=MODELS.map(m=>{
+      const sum=(dl["precipitation_sum_"+m.id]||[null])[0];
+      const prob=(dl["precipitation_probability_max_"+m.id]||[null])[0];
+      return {name:m.name, sum:(sum==null?null:sum), prob:(prob==null?null:prob), usable: prob!=null};
+    });
+    renderConsensus(rows);
+  }catch(e){ hideConsensus(); }
+}
+function renderConsensus(rows){
+  const usable=rows.filter(r=>r.usable);
+  if(usable.length<2){ hideConsensus(); return; }
+  showConsensus();
+  const predRain=(r)=> (r.prob>=50 || (r.sum!=null && r.sum>=1.0));
+  const rain=usable.filter(predRain).length, dry=usable.length-rain, n=usable.length;
+  const majorityRain=rain>n/2;
+  const agree=Math.max(rain,dry)/n;
+  const sums=usable.map(r=>r.sum==null?0:r.sum);
+  const mmMin=Math.min(...sums), mmMax=Math.max(...sums), spread=mmMax-mmMin;
+  const sorted=[...sums].sort((a,b)=>a-b), mmMed=sorted[Math.floor(sorted.length/2)];
+  let lvl,cls;
+  if(agree>=0.8 && spread<=3){ lvl="Alta"; cls="alta"; }
+  else if(agree<0.6 || spread>8){ lvl="Baja"; cls="baja"; }
+  else { lvl="Media"; cls="media"; }
+  const badge=$("csBadge"); badge.className="cs-badge "+cls;
+  badge.innerHTML=`Fiabilidad<span class="lvl">${lvl}</span>`;
+  $("csTitle").textContent = majorityRain
+    ? `${rain} de ${n} modelos prevén lluvia hoy`
+    : `${dry} de ${n} modelos no prevén lluvia hoy`;
+  let sub;
+  if(cls==="alta"){
+    sub = majorityRain ? `Alta concordancia. Se esperan del orden de ${fmtMM(mmMed)}.`
+                       : "Alta concordancia: hoy sin lluvia significativa.";
+  } else if(cls==="media"){
+    sub = `Concordancia parcial (lluvia estimada entre ${fmtMM(mmMin)} y ${fmtMM(mmMax)}). Para el corto plazo, guíate por el radar y la previsión por horas.`;
+  } else {
+    sub = `Los modelos discrepan (entre ${fmtMM(mmMin)} y ${fmtMM(mmMax)}). Fiabilidad baja: vigila el radar y la previsión por horas antes de decidir.`;
+  }
+  $("csSub").textContent=sub;
+  $("csModels").innerHTML=rows.map(r=>{
+    const c=!r.usable?"na":(predRain(r)?"rain":"dry");
+    const vals=r.usable?`${r.prob}% · ${fmtMM(r.sum)}`:"sin datos";
+    return `<span class="cs-m"><span class="dot ${c}"></span><span class="nm">${r.name}</span><span class="vals">${vals}</span></span>`;
+  }).join("");
 }
 
 /* ---- Carga meteorológica ---- */
