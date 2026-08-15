@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <meta name="theme-color" content="#0b1220" />
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1220'/%3E%3Cg%3E%3Ccircle cx='25' cy='24' r='11' fill='%23fbbf24'/%3E%3Cpath d='M19 47h27a9 9 0 0 0 .7-17.95 13 13 0 0 0-24.3-3.1A8.6 8.6 0 0 0 19 47z' fill='%23dbe4f0'/%3E%3Cg stroke='%2338bdf8' stroke-width='3' stroke-linecap='round'%3E%3Cline x1='24' y1='52' x2='22' y2='58'/%3E%3Cline x1='33' y1='52' x2='31' y2='58'/%3E%3Cline x1='42' y1='52' x2='40' y2='58'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" />
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1220'/%3E%3Ccircle cx='25' cy='24' r='11' fill='%23fbbf24'/%3E%3Cpath d='M19 47h27a9 9 0 0 0 .7-17.95 13 13 0 0 0-24.3-3.1A8.6 8.6 0 0 0 19 47z' fill='%23dbe4f0'/%3E%3C/svg%3E" />
@@ -33,6 +33,7 @@
     font-family:var(--font); color:var(--ink);
     background:radial-gradient(1200px 600px at 70% -10%, var(--bg2), var(--bg)) no-repeat;
     background-attachment:scroll; min-height:100vh; -webkit-font-smoothing:antialiased;
+    touch-action:manipulation;
   }
   .wrap{max-width:960px;margin:0 auto;padding:16px 16px 48px}
   header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 4px 18px}
@@ -414,6 +415,16 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
 const LS_KEY = "tiempo_last_location_v1";
+
+/* ---- Bloqueo de zoom de la página (no afecta al zoom del mapa) ---- */
+(function blockZoom(){
+  ["gesturestart","gesturechange","gestureend"].forEach(ev=>
+    document.addEventListener(ev, (e)=>e.preventDefault(), {passive:false}));   // pellizco iOS Safari
+  document.addEventListener("wheel", (e)=>{ if(e.ctrlKey) e.preventDefault(); }, {passive:false}); // Ctrl/⌘ + rueda
+  document.addEventListener("keydown", (e)=>{                                    // Ctrl/⌘ + (+ - = 0)
+    if((e.ctrlKey||e.metaKey) && ["+","-","=","0"].includes(e.key)) e.preventDefault();
+  });
+})();
 
 function toast(msg, ms = 2600){
   const t = $("toast"); t.textContent = msg; t.classList.add("show");
