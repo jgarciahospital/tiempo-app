@@ -221,7 +221,7 @@
   </section>
 
   <!-- 3) GRÁFICA DE PRECIPITACIÓN ±12h -->
-  <div class="section-title"><h2>Precipitación</h2><span class="hint">±12 h · desliza para ver pasado y futuro</span></div>
+  <div class="section-title"><h2>Precipitación</h2><span class="hint">±12 h · desliza · probabilidad y cantidad son medidas distintas</span></div>
   <section class="card chart-card">
     <div class="chart-legend">
       <span class="lg"><span class="swatch" style="background:var(--rainpast)"></span> Lluvia pasada (mm)</span>
@@ -539,10 +539,14 @@ function renderPrecipChart(d){
   });
   ctx.globalAlpha=1;
 
-  // línea de probabilidad
-  ctx.lineWidth=2.5;
+  // probabilidad: área translúcida + línea (magnitud distinta de la cantidad)
   const px=(i)=>i*hourW+hourW/2, py=(p)=>padT+plotH*(1-p/100);
-  ctx.strokeStyle=cProb; ctx.globalAlpha=.45; ctx.beginPath();
+  ctx.fillStyle=cProb; ctx.globalAlpha=.13;
+  ctx.beginPath(); ctx.moveTo(px(0),padT+plotH);
+  for(let i=0;i<N;i++){ ctx.lineTo(px(i),py(prob[i])); }
+  ctx.lineTo(px(N-1),padT+plotH); ctx.closePath(); ctx.fill();
+  ctx.globalAlpha=1; ctx.lineWidth=2.5; ctx.strokeStyle=cProb;
+  ctx.globalAlpha=.45; ctx.beginPath();
   for(let i=0;i<=nowPos;i++){ i===0?ctx.moveTo(px(i),py(prob[i])):ctx.lineTo(px(i),py(prob[i])); } ctx.stroke();
   ctx.globalAlpha=1; ctx.beginPath();
   for(let i=nowPos;i<N;i++){ i===nowPos?ctx.moveTo(px(i),py(prob[i])):ctx.lineTo(px(i),py(prob[i])); } ctx.stroke();
@@ -581,16 +585,17 @@ function initOrMoveRadar(){
   const zoom=10;
   if(!STATE.map){
     STATE.map = L.map("radar", { zoomControl:true, attributionControl:false }).setView([STATE.lat,STATE.lon], zoom);
-    const mapa = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+    // Base: mapa detallado (fondo, sin etiquetas para no duplicarlas)
+    const mapa = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png",
       {maxZoom:20, subdomains:"abcd"});
-    const sat = L.layerGroup([
-      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        {maxZoom:19}),
-      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
-        {maxZoom:19, opacity:0.9})
-    ]);
+    const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      {maxZoom:19});
     mapa.addTo(STATE.map);
+    // Radar en el medio
     STATE.radarLayerGroup = L.layerGroup().addTo(STATE.map);
+    // Etiquetas (nombres y carreteras) SIEMPRE por encima del radar → mapa y radar visibles a la vez
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png",
+      {maxZoom:20, subdomains:"abcd", zIndex:650}).addTo(STATE.map);
     L.control.attribution({prefix:false}).addAttribution('© OpenStreetMap, © CARTO, © Esri').addTo(STATE.map);
     L.control.layers({"Mapa":mapa,"Satélite":sat}, null, {position:"topright"}).addTo(STATE.map);
     STATE.marker = L.circleMarker([STATE.lat,STATE.lon], {radius:7,color:"#fff",weight:2,fillColor:"#4f9dff",fillOpacity:1}).addTo(STATE.map);
@@ -622,7 +627,7 @@ function frameLayer(frame){
 function showRadarFrame(i){
   const f=radarState.frames[i]; if(!f) return;
   Object.values(radarState.layers).forEach(l=>l.setOpacity(0));
-  frameLayer(f).setOpacity(0.68);
+  frameLayer(f).setOpacity(0.55);
   const dt=new Date(f.time*1000), hh=String(dt.getHours()).padStart(2,"0"), mm=String(dt.getMinutes()).padStart(2,"0");
   const isPast=f.time*1000<=Date.now();
   $("radarTime").textContent=(isPast?"":"pronóstico ")+`${hh}:${mm}`;
