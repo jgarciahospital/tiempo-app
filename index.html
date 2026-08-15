@@ -61,11 +61,15 @@
   .wi{display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.28))}
   .hero .now .temp{font-size:3.4rem;font-weight:700;line-height:1}
   .hero .now .desc{color:var(--muted);margin-top:2px}
-  .hero .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .hero .now .minmax{margin-top:8px;display:flex;gap:16px;font-size:1.12rem}
+  .hero .now .minmax .mx{color:var(--warn)}
+  .hero .now .minmax .mn{color:var(--accent2)}
+  .hero .now .minmax b{font-weight:700}
+  .hero .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .metric{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
   .metric .k{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.6px}
   .metric .v{font-size:1.2rem;font-weight:600;margin-top:2px}
-  @media (max-width:720px){ .hero-main{grid-template-columns:1fr} .hero .metrics{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:720px){ .hero-main{grid-template-columns:1fr} }
 
   .range-tabs{display:flex;gap:6px}
   .range-tabs button{padding:7px 12px;border-radius:999px}
@@ -226,6 +230,7 @@
         <div>
           <div class="temp" id="nowTemp">--°</div>
           <div class="desc" id="nowDesc">Cargando…</div>
+          <div class="minmax" id="nowMinMax"></div>
         </div>
       </div>
       <div class="rain-now" id="rainNow">
@@ -249,7 +254,6 @@
       <div class="metric"><div class="k">Sensación</div><div class="v" id="mFeels">--°</div></div>
       <div class="metric"><div class="k">Viento</div><div class="v" id="mWind">-- km/h</div></div>
       <div class="metric"><div class="k">Humedad</div><div class="v" id="mHum">--%</div></div>
-      <div class="metric"><div class="k">Máx / Mín hoy</div><div class="v" id="mMinMax">--° / --°</div></div>
     </div>
   </section>
 
@@ -529,7 +533,8 @@ function renderCurrent(d){
   $("mWind").textContent = Math.round(c.wind_speed_10m)+" "+(u.wind_speed_10m||"km/h");
   $("mHum").textContent = Math.round(c.relative_humidity_2m)+"%";
   const t=d._idx.todayIdx, dd=d.daily;
-  $("mMinMax").textContent = Math.round(dd.temperature_2m_max[t])+"° / "+Math.round(dd.temperature_2m_min[t])+"°";
+  $("nowMinMax").innerHTML = `<span class="mx">↑ <b>${Math.round(dd.temperature_2m_max[t])}°</b></span>`
+    + `<span class="mn">↓ <b>${Math.round(dd.temperature_2m_min[t])}°</b></span>`;
 }
 function nightIcon(code, dayIco){ if(code===0) return "🌙"; if(code===1||code===2) return "☁️"; return dayIco; }
 
