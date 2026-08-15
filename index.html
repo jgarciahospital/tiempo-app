@@ -54,17 +54,18 @@
   .section-title .hint{color:var(--muted);font-size:.8rem}
 
   /* ---- Héroe ---- */
-  .hero{padding:20px;display:grid;grid-template-columns:1.1fr 1fr;gap:18px;align-items:center}
-  .hero .now{display:flex;align-items:center;gap:16px}
-  .hero .now .ico{width:66px;height:66px;display:flex;align-items:center;justify-content:center}
+  .hero{padding:20px;display:flex;flex-direction:column;gap:16px}
+  .hero-main{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
+  .hero .now{display:flex;align-items:center;gap:16px;padding:4px 2px}
+  .hero .now .ico{width:66px;height:66px;display:flex;align-items:center;justify-content:center;flex:none}
   .wi{display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.28))}
   .hero .now .temp{font-size:3.4rem;font-weight:700;line-height:1}
   .hero .now .desc{color:var(--muted);margin-top:2px}
-  .hero .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .hero .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
   .metric{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
   .metric .k{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.6px}
   .metric .v{font-size:1.2rem;font-weight:600;margin-top:2px}
-  @media (max-width:640px){ .hero{grid-template-columns:1fr} }
+  @media (max-width:720px){ .hero-main{grid-template-columns:1fr} .hero .metrics{grid-template-columns:repeat(2,1fr)} }
 
   .range-tabs{display:flex;gap:6px}
   .range-tabs button{padding:7px 12px;border-radius:999px}
@@ -107,12 +108,16 @@
   .swipe-note{text-align:center;color:var(--muted);font-size:.78rem;margin:8px 4px 0}
 
   /* ---- Probabilidad de lluvia ---- */
-  .rain-now{padding:18px 20px;display:flex;align-items:center;gap:18px}
-  .gauge{position:relative;width:96px;height:96px;flex:none}
+  .rain-now{display:flex;align-items:center;gap:14px;background:var(--card2);
+    border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+  .gauge{position:relative;width:88px;height:88px;flex:none}
   .gauge svg{transform:rotate(-90deg)}
-  .gauge .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem}
-  .rain-now .txt .big{font-size:1.05rem;font-weight:600}
-  .rain-now .txt .sub{color:var(--muted);margin-top:4px;font-size:.9rem}
+  .gauge .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.18rem}
+  .rain-now .txt{min-width:0}
+  .rain-now .txt .k{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+  .rain-now .txt .big{font-size:1.02rem;font-weight:600;line-height:1.25}
+  .rain-now .txt .sub{color:var(--muted);margin-top:3px;font-size:.86rem;line-height:1.3}
+  .rain-now .txt .rn-hint{color:var(--muted);font-size:.78rem;margin-top:6px}
 
   /* ---- Gráfica precipitación ---- */
   .chart-card{padding:12px 0 6px;position:relative}
@@ -213,13 +218,31 @@
     </div>
   </header>
 
-  <!-- 1) PRONÓSTICO PRINCIPAL -->
+  <!-- 1) PRONÓSTICO PRINCIPAL (con probabilidad de lluvia integrada) -->
   <section class="card hero" id="hero" aria-live="polite">
-    <div class="now">
-      <div class="ico" id="nowIco">⏳</div>
-      <div>
-        <div class="temp" id="nowTemp">--°</div>
-        <div class="desc" id="nowDesc">Cargando…</div>
+    <div class="hero-main">
+      <div class="now">
+        <div class="ico" id="nowIco">⏳</div>
+        <div>
+          <div class="temp" id="nowTemp">--°</div>
+          <div class="desc" id="nowDesc">Cargando…</div>
+        </div>
+      </div>
+      <div class="rain-now" id="rainNow">
+        <div class="gauge">
+          <svg width="88" height="88" viewBox="0 0 96 96">
+            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--line)" stroke-width="10"/>
+            <circle id="gaugeArc" cx="48" cy="48" r="40" fill="none" stroke="var(--rain)" stroke-width="10"
+                    stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+          </svg>
+          <div class="val" id="gaugeVal">--%</div>
+        </div>
+        <div class="txt">
+          <div class="k">Probabilidad de lluvia</div>
+          <div class="big" id="rainBig">Calculando…</div>
+          <div class="sub" id="rainSub"></div>
+          <div class="rn-hint" id="rainHint"></div>
+        </div>
       </div>
     </div>
     <div class="metrics">
@@ -239,23 +262,6 @@
     <div class="fade-right" id="fadeRight">›</div>
   </section>
   <div class="swipe-note" id="swipeNote" style="display:none">Desliza para ver más días →</div>
-
-  <!-- 2) PROBABILIDAD DE LLUVIA -->
-  <div class="section-title"><h2>Probabilidad de lluvia</h2><span class="hint" id="rainHint"></span></div>
-  <section class="card rain-now" id="rainNow">
-    <div class="gauge">
-      <svg width="96" height="96" viewBox="0 0 96 96">
-        <circle cx="48" cy="48" r="40" fill="none" stroke="var(--line)" stroke-width="10"/>
-        <circle id="gaugeArc" cx="48" cy="48" r="40" fill="none" stroke="var(--rain)" stroke-width="10"
-                stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
-      </svg>
-      <div class="val" id="gaugeVal">--%</div>
-    </div>
-    <div class="txt">
-      <div class="big" id="rainBig">Calculando…</div>
-      <div class="sub" id="rainSub"></div>
-    </div>
-  </section>
 
   <!-- 3) GRÁFICA DE PRECIPITACIÓN ±12h -->
   <div class="section-title"><h2>Precipitación</h2><span class="hint">±12 h · desliza · probabilidad y cantidad son medidas distintas</span></div>
