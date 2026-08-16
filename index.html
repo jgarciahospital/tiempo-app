@@ -496,6 +496,10 @@ function fmtDay(iso, isToday, isTomorrow){
   return dayNames[new Date(iso+"T00:00").getDay()];
 }
 const fmtDate = (iso)=>{ const d=new Date(iso+"T00:00"); return d.getDate()+"/"+(d.getMonth()+1); };
+// --- Escalas de ejes "bonitas" (marcas uniformes) ---
+function niceStep(x){ if(x<=0) return 1; const mag=Math.pow(10,Math.floor(Math.log10(x))); const f=x/mag; const nf=f<=1?1:f<=2?2:f<=5?5:10; return nf*mag; }
+function niceMax(v){ if(v<=0) return 1; const step=niceStep(v/4); return +(step*4).toFixed(6); }
+const axfmt=(v)=> Number.isInteger(v)? String(v) : (Math.round(v*100)/100).toString();
 
 let STATE = { lat:null, lon:null, name:"", map:null, marker:null, radarLayerGroup:null };
 let CURRENT_DATA = null;
@@ -840,7 +844,7 @@ function renderPrecipChart(d){
   const cRain=st.getPropertyValue("--rain").trim(), cPast=st.getPropertyValue("--rainpast").trim(),
         cProb=st.getPropertyValue("--prob").trim(), cLine=st.getPropertyValue("--line").trim(),
         cMuted=st.getPropertyValue("--muted").trim(), cAccent=st.getPropertyValue("--accent").trim();
-  const maxP=Math.max(0.5, Math.max(...precip)*1.25);
+  const maxP=niceMax(Math.max(0.5, Math.max(...precip)*1.2));
 
   // rejilla horizontal
   ctx.strokeStyle=cLine; ctx.lineWidth=1;
@@ -887,7 +891,7 @@ function renderPrecipChart(d){
   const yl=$("yLeft"), yr=$("yRight"); yl.innerHTML=""; yr.innerHTML="";
   for(let g=0;g<=4;g++){
     const y=padT+plotH*g/4-6, mm=maxP*(1-g/4), pc=Math.round(100*(1-g/4));
-    const l=document.createElement("span"); l.style.top=y+"px"; l.textContent=(mm<1?mm.toFixed(1):Math.round(mm)); yl.appendChild(l);
+    const l=document.createElement("span"); l.style.top=y+"px"; l.textContent=axfmt(Math.round(mm*100)/100); yl.appendChild(l);
     const rr=document.createElement("span"); rr.style.top=y+"px"; rr.textContent=pc+"%"; yr.appendChild(rr);
   }
   // centrar "ahora"
@@ -943,9 +947,10 @@ function renderTempChart(d){
   const w=buildWindow(d); if(!w) return;
   const temp=w.val("temperature_2m"), hum=w.val("relative_humidity_2m").map(v=>v==null?0:v);
   const tv=temp.filter(v=>v!=null); const tmin=Math.min(...tv), tmax=Math.max(...tv);
+  let lo=Math.floor(tmin)-1, hi=Math.ceil(tmax)+1; const sp=hi-lo; hi+=(4-(sp%4))%4;   // rango múltiplo de 4 → marcas enteras uniformes
   drawSeriesChart($("chartTemp"),$("scrollTemp"),$("yLeftTemp"),$("yRightTemp"),{
     times:w.times,past:w.past,nowPos:w.nowPos,
-    primary:{data:temp,color:getVar("--warn"),min:Math.floor(tmin-1),max:Math.ceil(tmax+1),fill:true,unit:"°",showValues:true},
+    primary:{data:temp,color:getVar("--warn"),min:lo,max:hi,fill:true,unit:"°",showValues:true},
     secondary:{data:hum,color:getVar("--rain"),min:0,max:100,axis:"right",unit:"%"}
   });
 }
@@ -955,7 +960,7 @@ function renderWindChart(d){
   const hasGust=!!d.hourly.wind_gusts_10m;
   const gust=hasGust? w.val("wind_gusts_10m").map(v=>v==null?0:v):null;
   const dir=w.val("wind_direction_10m");
-  const maxv=Math.max(10, ...(gust||wind)); const top=Math.ceil(maxv/5)*5;
+  const maxv=Math.max(8, ...(gust||wind)); const top=niceMax(maxv);
   drawSeriesChart($("chartWind"),$("scrollWind"),$("yLeftWind"),null,{
     times:w.times,past:w.past,nowPos:w.nowPos,
     primary:{data:wind,color:getVar("--accent2"),min:0,max:top,fill:true,unit:"",showValues:true},
