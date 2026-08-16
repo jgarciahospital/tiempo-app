@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <meta name="theme-color" content="#0b1220" />
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1220'/%3E%3Cg%3E%3Ccircle cx='25' cy='24' r='11' fill='%23fbbf24'/%3E%3Cpath d='M19 47h27a9 9 0 0 0 .7-17.95 13 13 0 0 0-24.3-3.1A8.6 8.6 0 0 0 19 47z' fill='%23dbe4f0'/%3E%3Cg stroke='%2338bdf8' stroke-width='3' stroke-linecap='round'%3E%3Cline x1='24' y1='52' x2='22' y2='58'/%3E%3Cline x1='33' y1='52' x2='31' y2='58'/%3E%3Cline x1='42' y1='52' x2='40' y2='58'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" />
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1220'/%3E%3Ccircle cx='25' cy='24' r='11' fill='%23fbbf24'/%3E%3Cpath d='M19 47h27a9 9 0 0 0 .7-17.95 13 13 0 0 0-24.3-3.1A8.6 8.6 0 0 0 19 47z' fill='%23dbe4f0'/%3E%3C/svg%3E" />
-<title>El Tiempo · Pronóstico, lluvia y radar</title>
-<meta name="description" content="Pronóstico a 5, 10 y 15 días con mañana y tarde, probabilidad de lluvia, gráfica de precipitación ±12 h y radar meteorológico con zoom en tu localidad." />
+<title>Weather · forecast, rain and radar</title>
+<meta name="description" content="5, 10 and 15-day forecast with morning and afternoon, chance of rain, ±12 h precipitation chart and weather radar zoomed to your location." />
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -52,9 +52,8 @@
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
   .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 4px 8px;flex-wrap:wrap}
   .section-title h2{font-size:1.02rem;margin:0;letter-spacing:.2px}
-  .section-title .hint{color:var(--muted);font-size:.8rem}
 
-  /* ---- Héroe ---- */
+  /* Current conditions */
   .hero{padding:14px;display:flex;flex-direction:column;gap:11px}
   .hero-main{display:grid;grid-template-columns:1fr 1fr;gap:11px;align-items:stretch}
   .hero .now{display:flex;align-items:center;gap:13px;padding:2px}
@@ -72,11 +71,7 @@
   .metric .v{font-size:1.02rem;font-weight:600;margin-top:1px}
   @media (max-width:720px){ .hero-main{grid-template-columns:1fr} }
 
-  .range-tabs{display:flex;gap:6px}
-  .range-tabs button{padding:7px 12px;border-radius:999px}
-  .range-tabs button.active{background:var(--accent);color:#04122b;border-color:transparent;font-weight:700}
-
-  /* ---- Carrusel de días ---- */
+  /* Day carousel */
   .carousel-wrap{position:relative}
   .days-carousel{
     display:flex;gap:10px;overflow-x:auto;padding:12px;scroll-snap-type:x proximity;
@@ -110,9 +105,8 @@
     display:flex;align-items:center;justify-content:flex-end;padding-right:10px;
     color:var(--muted);font-size:1.6rem;font-weight:300;opacity:0;transition:opacity .2s}
   .fade-right.show{opacity:1}
-  .swipe-note{text-align:center;color:var(--muted);font-size:.78rem;margin:8px 4px 0}
 
-  /* ---- Probabilidad de lluvia ---- */
+  /* Chance of rain (inside hero) */
   .rain-now{display:flex;align-items:center;gap:12px;background:var(--card2);
     border:1px solid var(--line);border-radius:12px;padding:9px 12px}
   .gauge{position:relative;width:68px;height:68px;flex:none}
@@ -124,7 +118,7 @@
   .rain-now .txt .sub{color:var(--muted);margin-top:2px;font-size:.8rem;line-height:1.25}
   .rain-now .txt .rn-hint{color:var(--muted);font-size:.74rem;margin-top:4px}
 
-  /* ---- Hora a hora (pestañas) ---- */
+  /* Hourly tabs */
   .hourly{padding:0}
   .hourly-tabs{display:flex;gap:22px;padding:10px 16px 0;border-bottom:1px solid var(--line)}
   .hourly-tabs button{background:none;border:none;border-radius:0;padding:0 0 9px;color:var(--muted);
@@ -134,7 +128,7 @@
   .hourly-panel{display:none}
   .hourly-panel.active{display:block}
 
-  /* ---- Gráficas por horas ---- */
+  /* Hourly charts */
   .chart-card{padding:8px 0 4px;position:relative}
   .chart-legend{display:flex;gap:14px;padding:0 14px 6px;flex-wrap:wrap;font-size:.76rem;color:var(--muted)}
   .chart-legend .lg{display:flex;align-items:center;gap:6px}
@@ -142,23 +136,23 @@
   .chart-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;position:relative}
   .chart-scroll::-webkit-scrollbar{height:8px}
   .chart-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
-  #precipChart{display:block;height:196px}
+  .chart-scroll canvas{display:block;height:196px}
   .yaxis{position:absolute;top:8px;height:196px;width:38px;pointer-events:none;z-index:3}
   .yaxis.left{left:0;background:linear-gradient(90deg,var(--card) 70%,transparent)}
   .yaxis.right{right:0;background:linear-gradient(270deg,var(--card) 70%,transparent);text-align:right}
   .yaxis span{position:absolute;font-size:10px;color:var(--muted);left:4px;right:4px}
   .chart-empty{padding:26px;text-align:center;color:var(--muted)}
 
-  /* ---- Concordancia de modelos (compacto) ---- */
+  /* Model agreement (compact) */
   .consensus{padding:10px 12px;opacity:.9}
   .cs-hdr{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:7px}
   .cs-head{display:flex;align-items:center;gap:10px}
   .cs-badge{flex:none;text-align:center;padding:3px 8px;border-radius:999px;font-weight:700;
     font-size:.62rem;text-transform:uppercase;letter-spacing:.3px;border:1px solid var(--line);background:var(--card2)}
   .cs-badge .lvl{display:inline;font-size:.62rem;margin-left:3px}
-  .cs-badge.alta{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
-  .cs-badge.media{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
-  .cs-badge.baja{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent)}
+  .cs-badge.high{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+  .cs-badge.medium{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+  .cs-badge.low{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent)}
   .cs-title{font-size:.84rem;font-weight:600;line-height:1.25}
   .cs-sub{color:var(--muted);font-size:.76rem;margin-top:1px;line-height:1.3}
   .cs-models{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
@@ -168,7 +162,7 @@
   .cs-m .dot.rain{background:var(--rain)} .cs-m .dot.dry{background:var(--muted)} .cs-m .dot.na{background:var(--line)}
   .cs-m .nm{font-weight:600} .cs-m .vals{color:var(--muted)}
 
-  /* ---- Radar ---- */
+  /* Radar */
   #radar{height:440px;border-radius:var(--radius);overflow:hidden;position:relative}
   .radar-controls{
     position:absolute;z-index:500;left:12px;bottom:12px;display:flex;align-items:center;gap:10px;
@@ -185,7 +179,7 @@
   .radar-scale .ends{display:flex;justify-content:space-between;margin-top:3px;color:#9fb3d6}
   .leaflet-control-layers{border-radius:10px !important}
 
-  /* ---- Overlay de ubicación ---- */
+  /* Location overlay */
   .overlay{position:fixed;inset:0;z-index:2000;background:rgba(4,9,20,.72);backdrop-filter:blur(6px);
     display:flex;align-items:center;justify-content:center;padding:20px}
   .overlay.hidden{display:none}
@@ -206,7 +200,8 @@
   .divider::before,.divider::after{content:"";height:1px;background:var(--line);flex:1}
   .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--muted);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
   @keyframes spin{to{transform:rotate(360deg)}}
-  /* ---- Pop-up detalle del día ---- */
+
+  /* Day detail popup */
   .daymodal{width:100%;max-width:500px;max-height:82vh;display:flex;flex-direction:column;padding:0;overflow:hidden}
   .dm-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 12px;border-bottom:1px solid var(--line)}
   .dm-summary{display:flex;align-items:center;gap:12px;min-width:0}
@@ -251,21 +246,21 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> El Tiempo</div>
+    <div class="brand"><span class="dot"></span> <span id="brandName">Weather</span></div>
     <div class="loc">
-      <span class="name" id="locName">Detectando ubicación…</span>
-      <button id="btnChange" title="Cambiar ubicación">📍 Cambiar</button>
+      <span class="name" id="locName"></span>
+      <button id="btnChange"></button>
     </div>
   </header>
 
-  <!-- 1) PRONÓSTICO PRINCIPAL (con probabilidad de lluvia integrada) -->
+  <!-- Current conditions with integrated chance of rain -->
   <section class="card hero" id="hero" aria-live="polite">
     <div class="hero-main">
       <div class="now">
         <div class="ico" id="nowIco">⏳</div>
         <div>
           <div class="temp" id="nowTemp">--°</div>
-          <div class="desc" id="nowDesc">Cargando…</div>
+          <div class="desc" id="nowDesc"></div>
           <div class="minmax" id="nowMinMax"></div>
         </div>
       </div>
@@ -279,45 +274,38 @@
           <div class="val" id="gaugeVal">--%</div>
         </div>
         <div class="txt">
-          <div class="k">Probabilidad de lluvia</div>
-          <div class="big" id="rainBig">Calculando…</div>
+          <div class="k" id="rainLabel"></div>
+          <div class="big" id="rainBig"></div>
           <div class="sub" id="rainSub"></div>
           <div class="rn-hint" id="rainHint"></div>
         </div>
       </div>
     </div>
     <div class="metrics">
-      <div class="metric"><div class="k">Sensación</div><div class="v" id="mFeels">--°</div></div>
-      <div class="metric"><div class="k">Viento</div><div class="v" id="mWind">-- km/h</div></div>
-      <div class="metric"><div class="k">Humedad</div><div class="v" id="mHum">--%</div></div>
+      <div class="metric"><div class="k" id="mFeelsK"></div><div class="v" id="mFeels">--°</div></div>
+      <div class="metric"><div class="k" id="mWindK"></div><div class="v" id="mWind">-- km/h</div></div>
+      <div class="metric"><div class="k" id="mHumK"></div><div class="v" id="mHum">--%</div></div>
     </div>
   </section>
 
-  <!-- HORA A HORA: Temperatura (+humedad) / Precipitaciones / Viento -->
-  <div class="section-title"><h2>Por horas</h2></div>
+  <!-- Hourly: Temperature (+humidity) / Precipitation / Wind -->
+  <div class="section-title"><h2 id="titleHourly"></h2></div>
   <section class="card hourly">
     <div class="hourly-tabs" id="hourlyTabs">
-      <button data-tab="temp" class="active">Temperatura</button>
-      <button data-tab="precip">Precipitaciones</button>
-      <button data-tab="wind">Viento</button>
+      <button data-tab="temp" class="active" id="tabTemp"></button>
+      <button data-tab="precip" id="tabPrecip"></button>
+      <button data-tab="wind" id="tabWind"></button>
     </div>
 
     <div class="hourly-panel chart-card active" id="panelTemp">
-      <div class="chart-legend">
-        <span class="lg"><span class="swatch" style="background:var(--warn)"></span> Temperatura (°)</span>
-        <span class="lg"><span class="swatch" style="background:var(--rain)"></span> Humedad (%)</span>
-      </div>
+      <div class="chart-legend" id="legendTemp"></div>
       <div class="yaxis left" id="yLeftTemp"></div>
       <div class="yaxis right" id="yRightTemp"></div>
       <div class="chart-scroll" id="scrollTemp"><canvas id="chartTemp"></canvas></div>
     </div>
 
     <div class="hourly-panel chart-card" id="panelPrecip">
-      <div class="chart-legend">
-        <span class="lg"><span class="swatch" style="background:var(--rainpast)"></span> Lluvia pasada (mm)</span>
-        <span class="lg"><span class="swatch" style="background:var(--rain)"></span> Lluvia prevista (mm)</span>
-        <span class="lg"><span class="swatch" style="background:var(--prob)"></span> Probabilidad (%)</span>
-      </div>
+      <div class="chart-legend" id="legendPrecip"></div>
       <div class="yaxis left" id="yLeft"></div>
       <div class="yaxis right" id="yRight"></div>
       <div class="chart-scroll" id="chartScroll"><canvas id="precipChart"></canvas></div>
@@ -325,77 +313,65 @@
     </div>
 
     <div class="hourly-panel chart-card" id="panelWind">
-      <div class="chart-legend">
-        <span class="lg"><span class="swatch" style="background:var(--accent2)"></span> Viento (km/h)</span>
-        <span class="lg"><span class="swatch" style="background:var(--muted)"></span> Ráfagas (km/h)</span>
-      </div>
+      <div class="chart-legend" id="legendWind"></div>
       <div class="yaxis left" id="yLeftWind"></div>
       <div class="chart-scroll" id="scrollWind"><canvas id="chartWind"></canvas></div>
     </div>
   </section>
 
-  <div class="section-title">
-    <h2>Pronóstico extendido</h2>
-  </div>
+  <div class="section-title"><h2 id="titleExtended"></h2></div>
   <section class="card carousel-wrap">
-    <div class="days-carousel" id="days"><div class="chart-empty">Cargando pronóstico…</div></div>
+    <div class="days-carousel" id="days"></div>
     <div class="fade-right" id="fadeRight">›</div>
   </section>
 
-  <!-- 4) RADAR -->
-  <div class="section-title"><h2>Radar meteorológico</h2></div>
+  <div class="section-title"><h2 id="titleRadar"></h2></div>
   <section class="card" style="padding:6px">
     <div id="radar">
       <div class="radar-controls">
         <button id="radarPlay">⏸️</button>
         <span id="radarTime">—</span>
       </div>
-      <div class="radar-scale">Intensidad de lluvia
+      <div class="radar-scale"><span id="radarScaleLabel"></span>
         <div class="bar"></div>
-        <div class="ends"><span>débil</span><span>fuerte</span></div>
+        <div class="ends"><span id="radarWeak"></span><span id="radarStrong"></span></div>
       </div>
     </div>
   </section>
 
-  <!-- CONCORDANCIA DE MODELOS (compacto, al final) -->
+  <!-- Model agreement (compact, at the bottom) -->
   <section class="card consensus" id="consensus">
-    <div class="cs-hdr">Concordancia entre modelos</div>
+    <div class="cs-hdr" id="csHdr"></div>
     <div class="cs-head">
       <div class="cs-badge" id="csBadge">—</div>
       <div class="cs-text">
-        <div class="cs-title" id="csTitle">Calculando…</div>
+        <div class="cs-title" id="csTitle"></div>
         <div class="cs-sub" id="csSub"></div>
       </div>
     </div>
     <div class="cs-models" id="csModels"></div>
   </section>
 
-  <footer>
-    Datos de <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> ·
-    Radar de <a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a> ·
-    Mapa © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>/CARTO ·
-    Satélite © Esri<br>
-    Aplicación de demostración. La precisión depende de los servicios de datos abiertos.
-  </footer>
+  <footer id="footer"></footer>
 </div>
 
-<!-- OVERLAY DE UBICACIÓN -->
+<!-- Location overlay -->
 <div class="overlay hidden" id="overlay">
   <div class="card modal">
-    <h3 id="ovTitle">¿Dónde estás?</h3>
-    <p id="ovText">Necesitamos tu ubicación para mostrar el tiempo de tu zona. Puedes permitir la localización precisa del dispositivo o buscar tu población manualmente.</p>
-    <button class="btn primary" id="btnGeo" style="width:100%">📍 Usar mi ubicación (precisa)</button>
-    <div class="divider">o busca manualmente</div>
+    <h3 id="ovTitle"></h3>
+    <p id="ovText"></p>
+    <button class="btn primary" id="btnGeo" style="width:100%"></button>
+    <div class="divider" id="ovDivider"></div>
     <div class="field">
-      <input type="text" id="searchInput" placeholder="Ciudad, pueblo o código postal…" autocomplete="off" />
-      <button class="btn primary" id="btnSearch">Buscar</button>
+      <input type="text" id="searchInput" autocomplete="off" />
+      <button class="btn primary" id="btnSearch"></button>
     </div>
     <div class="results" id="results"></div>
     <div class="status" id="ovStatus"></div>
   </div>
 </div>
 
-<!-- POP-UP DETALLE DEL DÍA -->
+<!-- Day detail popup -->
 <div class="overlay hidden" id="dayModal">
   <div class="card daymodal" id="dmCard">
     <div class="dm-head">
@@ -407,12 +383,12 @@
         </div>
       </div>
       <div class="dm-actions">
-        <button class="dm-nav" id="dmPrev" aria-label="Día anterior">‹</button>
-        <button class="dm-nav" id="dmNext" aria-label="Día siguiente">›</button>
-        <button class="dm-x" id="dmClose" aria-label="Cerrar">✕</button>
+        <button class="dm-nav" id="dmPrev">‹</button>
+        <button class="dm-nav" id="dmNext">›</button>
+        <button class="dm-x" id="dmClose">✕</button>
       </div>
     </div>
-    <div class="dm-cols"><span>Hora</span><span></span><span>Temp</span><span>Prob.</span><span>Lluvia</span></div>
+    <div class="dm-cols"><span id="colHour"></span><span></span><span id="colTemp"></span><span id="colProb"></span><span id="colRain"></span></div>
     <div class="dm-body" id="dmBody"></div>
   </div>
 </div>
@@ -424,44 +400,319 @@
 <script>
 "use strict";
 const $ = (id) => document.getElementById(id);
-const LS_KEY = "tiempo_last_location_v1";
+const LS_KEY = "weather_last_location_v1";
 
-/* ---- Bloqueo de zoom de la página (no afecta al zoom del mapa) ---- */
+/* ===================== Internationalisation ===================== */
+const SUPPORTED = ["en","es","ca","gl","fr","pt"];
+const BCP = { en:"en-GB", es:"es-ES", ca:"ca-ES", gl:"gl-ES", fr:"fr-FR", pt:"pt-PT" };
+
+function detectLang(){
+  const q = new URLSearchParams(location.search).get("lang");
+  if(q && SUPPORTED.includes(q)) return q;
+  try{ const s=localStorage.getItem("weather_lang"); if(s && SUPPORTED.includes(s)) return s; }catch(e){}
+  const cands = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language||"en"];
+  for(const c of cands){ const b=(c||"").toLowerCase().split("-")[0]; if(SUPPORTED.includes(b)) return b; }
+  return "en";
+}
+const LANG = detectLang();
+
+const STR = {
+  en:{
+    brand:"Weather", change:"Change", detecting:"Detecting location…", loading:"Loading…", err_load:"Error loading data",
+    rain_prob:"Chance of rain", raining_now:"It's raining now", raining_now_sub:"{mm} mm in the last hour.",
+    very_likely:"Rain very likely", very_likely_sub:"High chance of rain in the coming hours.",
+    possible:"Rain possible", possible_sub:"It might rain; check the chart and radar.",
+    unlikely:"Rain unlikely", unlikely_sub:"Low risk of rain for now.",
+    none:"No rain expected", none_sub:"No precipitation expected in the coming hours.",
+    today_accum:"today: {mm} mm accumulated",
+    feels:"Feels like", wind:"Wind", humidity:"Humidity",
+    hourly:"Hourly", temperature:"Temperature", precipitation:"Precipitation",
+    past_rain:"Past rain", fore_rain:"Forecast rain", prob:"Probability", gusts:"Gusts", now:"NOW",
+    extended:"Extended forecast", morning:"Morning", afternoon:"Afternoon", min_l:"min", max_l:"max",
+    radar:"Weather radar", radar_intensity:"Rain intensity", weak:"light", strong:"heavy",
+    layer_map:"Map", layer_sat:"Satellite", radar_unavailable:"Radar unavailable", forecast_prefix:"forecast ",
+    consensus_hdr:"Model agreement", reliability:"Reliability", high:"High", medium:"Medium", low:"Low", calculating:"Calculating…",
+    models_rain:"{n} of {m} models expect rain today", models_dry:"{n} of {m} models expect no rain today",
+    agree_high_rain:"Strong agreement. Around {mm} expected.", agree_high_dry:"Strong agreement: no significant rain today.",
+    agree_medium:"Partial agreement (rain estimated between {a} and {b}). For the short term, rely on the radar and hourly forecast.",
+    agree_low:"Models disagree (between {a} and {b}). Low reliability: check the radar and hourly forecast before deciding.",
+    no_data:"no data", col_hour:"Hour", col_temp:"Temp", col_prob:"Prob.", col_rain:"Rain", feels_short:"Feels",
+    total_rain:"total rain {mm}", no_hourly:"No hourly data for this day.", precip_no_data:"No precipitation data for this area.",
+    where:"Where are you?", where_text:"We need your location to show your local weather. You can allow precise device location or search for your town manually.",
+    use_location:"Use my location (precise)", or_manual:"or search manually", search_ph:"City, town or postal code…", search_btn:"Search",
+    geo_unsupported:"This device does not support geolocation. Enter your town manually.",
+    geo_denied:"Location permission denied. Enter your town manually.",
+    geo_unavailable:"Location unavailable. Enter your town manually.",
+    geo_timeout:"Timed out. Enter your town manually.",
+    geo_fail:"Could not get your location. Enter your town manually.",
+    requesting:"Requesting precise location…", min2:"Type at least 2 characters.", searching:"Searching…",
+    no_results:"No results. Try another name.", search_err:"Network error while searching. Try again.",
+    weather_err:"Could not load weather data.", my_location:"My location",
+    today:"Today", tomorrow:"Tomorrow",
+    footer_data:"Data from", footer_radar:"Radar by", footer_map:"Map",
+    footer_demo:"Demo application. Accuracy depends on open data services."
+  },
+  es:{
+    brand:"El Tiempo", change:"Cambiar", detecting:"Detectando ubicación…", loading:"Cargando…", err_load:"Error al cargar datos",
+    rain_prob:"Probabilidad de lluvia", raining_now:"Está lloviendo ahora", raining_now_sub:"{mm} mm en la última hora.",
+    very_likely:"Lluvia muy probable", very_likely_sub:"Alta probabilidad de precipitación en las próximas horas.",
+    possible:"Posibilidad de lluvia", possible_sub:"Podría llover; consulta la gráfica y el radar.",
+    unlikely:"Lluvia poco probable", unlikely_sub:"Bajo riesgo de precipitación por ahora.",
+    none:"Sin lluvia prevista", none_sub:"No se espera precipitación en las próximas horas.",
+    today_accum:"hoy: {mm} mm acumulados",
+    feels:"Sensación", wind:"Viento", humidity:"Humedad",
+    hourly:"Por horas", temperature:"Temperatura", precipitation:"Precipitaciones",
+    past_rain:"Lluvia pasada", fore_rain:"Lluvia prevista", prob:"Probabilidad", gusts:"Ráfagas", now:"AHORA",
+    extended:"Pronóstico extendido", morning:"Mañana", afternoon:"Tarde", min_l:"mín", max_l:"máx",
+    radar:"Radar meteorológico", radar_intensity:"Intensidad de lluvia", weak:"débil", strong:"fuerte",
+    layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar no disponible", forecast_prefix:"pronóstico ",
+    consensus_hdr:"Concordancia entre modelos", reliability:"Fiabilidad", high:"Alta", medium:"Media", low:"Baja", calculating:"Calculando…",
+    models_rain:"{n} de {m} modelos prevén lluvia hoy", models_dry:"{n} de {m} modelos no prevén lluvia hoy",
+    agree_high_rain:"Alta concordancia. Se esperan del orden de {mm}.", agree_high_dry:"Alta concordancia: hoy sin lluvia significativa.",
+    agree_medium:"Concordancia parcial (lluvia estimada entre {a} y {b}). Para el corto plazo, guíate por el radar y la previsión por horas.",
+    agree_low:"Los modelos discrepan (entre {a} y {b}). Fiabilidad baja: vigila el radar y la previsión por horas antes de decidir.",
+    no_data:"sin datos", col_hour:"Hora", col_temp:"Temp", col_prob:"Prob.", col_rain:"Lluvia", feels_short:"Sens.",
+    total_rain:"lluvia total {mm}", no_hourly:"Sin datos horarios para este día.", precip_no_data:"No hay datos de precipitación para esta zona.",
+    where:"¿Dónde estás?", where_text:"Necesitamos tu ubicación para mostrar el tiempo de tu zona. Puedes permitir la localización precisa del dispositivo o buscar tu población manualmente.",
+    use_location:"Usar mi ubicación (precisa)", or_manual:"o busca manualmente", search_ph:"Ciudad, pueblo o código postal…", search_btn:"Buscar",
+    geo_unsupported:"Este dispositivo no permite geolocalización. Introduce tu población manualmente.",
+    geo_denied:"Permiso de ubicación denegado. Introduce tu población manualmente.",
+    geo_unavailable:"Ubicación no disponible. Introduce tu población manualmente.",
+    geo_timeout:"Se agotó el tiempo de espera. Introduce tu población manualmente.",
+    geo_fail:"No se pudo obtener la ubicación. Introduce tu población manualmente.",
+    requesting:"Solicitando ubicación precisa…", min2:"Escribe al menos 2 caracteres.", searching:"Buscando…",
+    no_results:"Sin resultados. Prueba con otro nombre.", search_err:"Error de red al buscar. Reinténtalo.",
+    weather_err:"No se pudieron cargar los datos meteorológicos.", my_location:"Mi ubicación",
+    today:"Hoy", tomorrow:"Mañana",
+    footer_data:"Datos de", footer_radar:"Radar de", footer_map:"Mapa",
+    footer_demo:"Aplicación de demostración. La precisión depende de los servicios de datos abiertos."
+  },
+  ca:{
+    brand:"El Temps", change:"Canviar", detecting:"Detectant ubicació…", loading:"Carregant…", err_load:"Error en carregar dades",
+    rain_prob:"Probabilitat de pluja", raining_now:"Està plovent ara", raining_now_sub:"{mm} mm en l'última hora.",
+    very_likely:"Pluja molt probable", very_likely_sub:"Alta probabilitat de precipitació en les pròximes hores.",
+    possible:"Possibilitat de pluja", possible_sub:"Podria ploure; consulta el gràfic i el radar.",
+    unlikely:"Pluja poc probable", unlikely_sub:"Risc baix de precipitació de moment.",
+    none:"Sense pluja prevista", none_sub:"No s'espera precipitació en les pròximes hores.",
+    today_accum:"avui: {mm} mm acumulats",
+    feels:"Sensació", wind:"Vent", humidity:"Humitat",
+    hourly:"Per hores", temperature:"Temperatura", precipitation:"Precipitacions",
+    past_rain:"Pluja passada", fore_rain:"Pluja prevista", prob:"Probabilitat", gusts:"Ratxes", now:"ARA",
+    extended:"Pronòstic ampliat", morning:"Matí", afternoon:"Tarda", min_l:"mín", max_l:"màx",
+    radar:"Radar meteorològic", radar_intensity:"Intensitat de pluja", weak:"feble", strong:"forta",
+    layer_map:"Mapa", layer_sat:"Satèl·lit", radar_unavailable:"Radar no disponible", forecast_prefix:"pronòstic ",
+    consensus_hdr:"Concordança entre models", reliability:"Fiabilitat", high:"Alta", medium:"Mitjana", low:"Baixa", calculating:"Calculant…",
+    models_rain:"{n} de {m} models preveuen pluja avui", models_dry:"{n} de {m} models no preveuen pluja avui",
+    agree_high_rain:"Alta concordança. S'esperen uns {mm}.", agree_high_dry:"Alta concordança: avui sense pluja significativa.",
+    agree_medium:"Concordança parcial (pluja estimada entre {a} i {b}). A curt termini, guia't pel radar i la previsió per hores.",
+    agree_low:"Els models discrepen (entre {a} i {b}). Fiabilitat baixa: vigila el radar i la previsió per hores abans de decidir.",
+    no_data:"sense dades", col_hour:"Hora", col_temp:"Temp", col_prob:"Prob.", col_rain:"Pluja", feels_short:"Sens.",
+    total_rain:"pluja total {mm}", no_hourly:"Sense dades horàries per a aquest dia.", precip_no_data:"No hi ha dades de precipitació per a aquesta zona.",
+    where:"On ets?", where_text:"Necessitem la teva ubicació per mostrar el temps de la teva zona. Pots permetre la localització precisa del dispositiu o cercar la teva població manualment.",
+    use_location:"Usar la meva ubicació (precisa)", or_manual:"o cerca manualment", search_ph:"Ciutat, poble o codi postal…", search_btn:"Cerca",
+    geo_unsupported:"Aquest dispositiu no permet geolocalització. Introdueix la teva població manualment.",
+    geo_denied:"Permís d'ubicació denegat. Introdueix la teva població manualment.",
+    geo_unavailable:"Ubicació no disponible. Introdueix la teva població manualment.",
+    geo_timeout:"S'ha esgotat el temps d'espera. Introdueix la teva població manualment.",
+    geo_fail:"No s'ha pogut obtenir la ubicació. Introdueix la teva població manualment.",
+    requesting:"Sol·licitant ubicació precisa…", min2:"Escriu almenys 2 caràcters.", searching:"Cercant…",
+    no_results:"Sense resultats. Prova amb un altre nom.", search_err:"Error de xarxa en cercar. Torna-ho a provar.",
+    weather_err:"No s'han pogut carregar les dades meteorològiques.", my_location:"La meva ubicació",
+    today:"Avui", tomorrow:"Demà",
+    footer_data:"Dades de", footer_radar:"Radar de", footer_map:"Mapa",
+    footer_demo:"Aplicació de demostració. La precisió depèn dels serveis de dades obertes."
+  },
+  gl:{
+    brand:"O Tempo", change:"Cambiar", detecting:"Detectando localización…", loading:"Cargando…", err_load:"Erro ao cargar datos",
+    rain_prob:"Probabilidade de choiva", raining_now:"Está a chover agora", raining_now_sub:"{mm} mm na última hora.",
+    very_likely:"Choiva moi probable", very_likely_sub:"Alta probabilidade de precipitación nas próximas horas.",
+    possible:"Posibilidade de choiva", possible_sub:"Podería chover; consulta a gráfica e o radar.",
+    unlikely:"Choiva pouco probable", unlikely_sub:"Risco baixo de precipitación polo momento.",
+    none:"Sen choiva prevista", none_sub:"Non se espera precipitación nas próximas horas.",
+    today_accum:"hoxe: {mm} mm acumulados",
+    feels:"Sensación", wind:"Vento", humidity:"Humidade",
+    hourly:"Por horas", temperature:"Temperatura", precipitation:"Precipitacións",
+    past_rain:"Choiva pasada", fore_rain:"Choiva prevista", prob:"Probabilidade", gusts:"Refachos", now:"AGORA",
+    extended:"Prognóstico ampliado", morning:"Mañá", afternoon:"Tarde", min_l:"mín", max_l:"máx",
+    radar:"Radar meteorolóxico", radar_intensity:"Intensidade de choiva", weak:"débil", strong:"forte",
+    layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar non dispoñible", forecast_prefix:"prognóstico ",
+    consensus_hdr:"Concordancia entre modelos", reliability:"Fiabilidade", high:"Alta", medium:"Media", low:"Baixa", calculating:"Calculando…",
+    models_rain:"{n} de {m} modelos prevén choiva hoxe", models_dry:"{n} de {m} modelos non prevén choiva hoxe",
+    agree_high_rain:"Alta concordancia. Espéranse uns {mm}.", agree_high_dry:"Alta concordancia: hoxe sen choiva significativa.",
+    agree_medium:"Concordancia parcial (choiva estimada entre {a} e {b}). A curto prazo, guíate polo radar e a previsión por horas.",
+    agree_low:"Os modelos discrepan (entre {a} e {b}). Fiabilidade baixa: vixía o radar e a previsión por horas antes de decidir.",
+    no_data:"sen datos", col_hour:"Hora", col_temp:"Temp", col_prob:"Prob.", col_rain:"Choiva", feels_short:"Sens.",
+    total_rain:"choiva total {mm}", no_hourly:"Sen datos horarios para este día.", precip_no_data:"Non hai datos de precipitación para esta zona.",
+    where:"Onde estás?", where_text:"Precisamos a túa localización para amosar o tempo da túa zona. Podes permitir a localización precisa do dispositivo ou buscar a túa poboación manualmente.",
+    use_location:"Usar a miña localización (precisa)", or_manual:"ou busca manualmente", search_ph:"Cidade, vila ou código postal…", search_btn:"Buscar",
+    geo_unsupported:"Este dispositivo non permite xeolocalización. Introduce a túa poboación manualmente.",
+    geo_denied:"Permiso de localización denegado. Introduce a túa poboación manualmente.",
+    geo_unavailable:"Localización non dispoñible. Introduce a túa poboación manualmente.",
+    geo_timeout:"Esgotouse o tempo de espera. Introduce a túa poboación manualmente.",
+    geo_fail:"Non se puido obter a localización. Introduce a túa poboación manualmente.",
+    requesting:"Solicitando localización precisa…", min2:"Escribe polo menos 2 caracteres.", searching:"Buscando…",
+    no_results:"Sen resultados. Proba con outro nome.", search_err:"Erro de rede ao buscar. Téntao de novo.",
+    weather_err:"Non se puideron cargar os datos meteorolóxicos.", my_location:"A miña localización",
+    today:"Hoxe", tomorrow:"Mañá",
+    footer_data:"Datos de", footer_radar:"Radar de", footer_map:"Mapa",
+    footer_demo:"Aplicación de demostración. A precisión depende dos servizos de datos abertos."
+  },
+  fr:{
+    brand:"Météo", change:"Changer", detecting:"Détection de la position…", loading:"Chargement…", err_load:"Erreur de chargement",
+    rain_prob:"Probabilité de pluie", raining_now:"Il pleut en ce moment", raining_now_sub:"{mm} mm dans la dernière heure.",
+    very_likely:"Pluie très probable", very_likely_sub:"Forte probabilité de précipitations dans les prochaines heures.",
+    possible:"Pluie possible", possible_sub:"Il pourrait pleuvoir ; consultez le graphique et le radar.",
+    unlikely:"Pluie peu probable", unlikely_sub:"Faible risque de précipitations pour l'instant.",
+    none:"Pas de pluie prévue", none_sub:"Aucune précipitation prévue dans les prochaines heures.",
+    today_accum:"aujourd'hui : {mm} mm cumulés",
+    feels:"Ressenti", wind:"Vent", humidity:"Humidité",
+    hourly:"Par heure", temperature:"Température", precipitation:"Précipitations",
+    past_rain:"Pluie passée", fore_rain:"Pluie prévue", prob:"Probabilité", gusts:"Rafales", now:"MAINT.",
+    extended:"Prévisions étendues", morning:"Matin", afternoon:"Après-midi", min_l:"min", max_l:"max",
+    radar:"Radar météo", radar_intensity:"Intensité de pluie", weak:"faible", strong:"forte",
+    layer_map:"Carte", layer_sat:"Satellite", radar_unavailable:"Radar indisponible", forecast_prefix:"prévision ",
+    consensus_hdr:"Accord entre modèles", reliability:"Fiabilité", high:"Élevée", medium:"Moyenne", low:"Faible", calculating:"Calcul…",
+    models_rain:"{n} modèles sur {m} prévoient de la pluie aujourd'hui", models_dry:"{n} modèles sur {m} ne prévoient pas de pluie aujourd'hui",
+    agree_high_rain:"Fort accord. Environ {mm} attendus.", agree_high_dry:"Fort accord : pas de pluie significative aujourd'hui.",
+    agree_medium:"Accord partiel (pluie estimée entre {a} et {b}). À court terme, fiez-vous au radar et aux prévisions horaires.",
+    agree_low:"Les modèles divergent (entre {a} et {b}). Fiabilité faible : consultez le radar et les prévisions horaires avant de décider.",
+    no_data:"aucune donnée", col_hour:"Heure", col_temp:"Temp", col_prob:"Prob.", col_rain:"Pluie", feels_short:"Ress.",
+    total_rain:"pluie totale {mm}", no_hourly:"Aucune donnée horaire pour ce jour.", precip_no_data:"Aucune donnée de précipitations pour cette zone.",
+    where:"Où êtes-vous ?", where_text:"Nous avons besoin de votre position pour afficher la météo locale. Vous pouvez autoriser la localisation précise ou rechercher votre ville manuellement.",
+    use_location:"Utiliser ma position (précise)", or_manual:"ou cherchez manuellement", search_ph:"Ville, village ou code postal…", search_btn:"Rechercher",
+    geo_unsupported:"Cet appareil ne prend pas en charge la géolocalisation. Saisissez votre ville manuellement.",
+    geo_denied:"Autorisation de localisation refusée. Saisissez votre ville manuellement.",
+    geo_unavailable:"Position indisponible. Saisissez votre ville manuellement.",
+    geo_timeout:"Délai dépassé. Saisissez votre ville manuellement.",
+    geo_fail:"Impossible d'obtenir la position. Saisissez votre ville manuellement.",
+    requesting:"Demande de position précise…", min2:"Saisissez au moins 2 caractères.", searching:"Recherche…",
+    no_results:"Aucun résultat. Essayez un autre nom.", search_err:"Erreur réseau lors de la recherche. Réessayez.",
+    weather_err:"Impossible de charger les données météo.", my_location:"Ma position",
+    today:"Aujourd'hui", tomorrow:"Demain",
+    footer_data:"Données de", footer_radar:"Radar de", footer_map:"Carte",
+    footer_demo:"Application de démonstration. La précision dépend des services de données ouvertes."
+  },
+  pt:{
+    brand:"O Tempo", change:"Mudar", detecting:"A detetar localização…", loading:"A carregar…", err_load:"Erro ao carregar dados",
+    rain_prob:"Probabilidade de chuva", raining_now:"Está a chover agora", raining_now_sub:"{mm} mm na última hora.",
+    very_likely:"Chuva muito provável", very_likely_sub:"Alta probabilidade de precipitação nas próximas horas.",
+    possible:"Possibilidade de chuva", possible_sub:"Pode chover; consulte o gráfico e o radar.",
+    unlikely:"Chuva pouco provável", unlikely_sub:"Baixo risco de precipitação por agora.",
+    none:"Sem chuva prevista", none_sub:"Não se espera precipitação nas próximas horas.",
+    today_accum:"hoje: {mm} mm acumulados",
+    feels:"Sensação", wind:"Vento", humidity:"Humidade",
+    hourly:"Por hora", temperature:"Temperatura", precipitation:"Precipitação",
+    past_rain:"Chuva passada", fore_rain:"Chuva prevista", prob:"Probabilidade", gusts:"Rajadas", now:"AGORA",
+    extended:"Previsão alargada", morning:"Manhã", afternoon:"Tarde", min_l:"mín", max_l:"máx",
+    radar:"Radar meteorológico", radar_intensity:"Intensidade de chuva", weak:"fraca", strong:"forte",
+    layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar indisponível", forecast_prefix:"previsão ",
+    consensus_hdr:"Concordância entre modelos", reliability:"Fiabilidade", high:"Alta", medium:"Média", low:"Baixa", calculating:"A calcular…",
+    models_rain:"{n} de {m} modelos preveem chuva hoje", models_dry:"{n} de {m} modelos não preveem chuva hoje",
+    agree_high_rain:"Forte concordância. Esperam-se cerca de {mm}.", agree_high_dry:"Forte concordância: hoje sem chuva significativa.",
+    agree_medium:"Concordância parcial (chuva estimada entre {a} e {b}). A curto prazo, guie-se pelo radar e pela previsão horária.",
+    agree_low:"Os modelos divergem (entre {a} e {b}). Fiabilidade baixa: verifique o radar e a previsão horária antes de decidir.",
+    no_data:"sem dados", col_hour:"Hora", col_temp:"Temp", col_prob:"Prob.", col_rain:"Chuva", feels_short:"Sens.",
+    total_rain:"chuva total {mm}", no_hourly:"Sem dados horários para este dia.", precip_no_data:"Sem dados de precipitação para esta zona.",
+    where:"Onde está?", where_text:"Precisamos da sua localização para mostrar o tempo da sua zona. Pode permitir a localização precisa do dispositivo ou procurar a sua localidade manualmente.",
+    use_location:"Usar a minha localização (precisa)", or_manual:"ou pesquise manualmente", search_ph:"Cidade, vila ou código postal…", search_btn:"Procurar",
+    geo_unsupported:"Este dispositivo não suporta geolocalização. Introduza a sua localidade manualmente.",
+    geo_denied:"Permissão de localização negada. Introduza a sua localidade manualmente.",
+    geo_unavailable:"Localização indisponível. Introduza a sua localidade manualmente.",
+    geo_timeout:"Tempo esgotado. Introduza a sua localidade manualmente.",
+    geo_fail:"Não foi possível obter a localização. Introduza a sua localidade manualmente.",
+    requesting:"A solicitar localização precisa…", min2:"Escreva pelo menos 2 caracteres.", searching:"A procurar…",
+    no_results:"Sem resultados. Tente outro nome.", search_err:"Erro de rede ao procurar. Tente novamente.",
+    weather_err:"Não foi possível carregar os dados meteorológicos.", my_location:"A minha localização",
+    today:"Hoje", tomorrow:"Amanhã",
+    footer_data:"Dados de", footer_radar:"Radar de", footer_map:"Mapa",
+    footer_demo:"Aplicação de demonstração. A precisão depende dos serviços de dados abertos."
+  }
+};
+function t(key, vars){
+  const dict = STR[LANG] || STR.en;
+  let s = (dict[key]!=null) ? dict[key] : (STR.en[key]!=null ? STR.en[key] : key);
+  if(vars) for(const p in vars) s = s.split("{"+p+"}").join(vars[p]);
+  return s;
+}
+
+// WMO weather-code descriptions: [code, en, es, ca, gl, fr, pt]
+const WMO_ROWS = [
+  [0,"Clear sky","Despejado","Cel serè","Ceo despexado","Ciel dégagé","Céu limpo"],
+  [1,"Mainly clear","Mayormente despejado","Majorment serè","Maiormente despexado","Plutôt dégagé","Predominantemente limpo"],
+  [2,"Partly cloudy","Parcialmente nublado","Parcialment ennuvolat","Parcialmente anubrado","Partiellement nuageux","Parcialmente nublado"],
+  [3,"Overcast","Nublado","Ennuvolat","Anubrado","Couvert","Encoberto"],
+  [45,"Fog","Niebla","Boira","Néboa","Brouillard","Nevoeiro"],
+  [48,"Rime fog","Niebla con escarcha","Boira amb gebre","Néboa con xeada","Brouillard givrant","Nevoeiro com geada"],
+  [51,"Light drizzle","Llovizna débil","Plugim feble","Orballo débil","Bruine légère","Chuvisco fraco"],
+  [53,"Moderate drizzle","Llovizna moderada","Plugim moderat","Orballo moderado","Bruine modérée","Chuvisco moderado"],
+  [55,"Dense drizzle","Llovizna intensa","Plugim intens","Orballo intenso","Bruine dense","Chuvisco intenso"],
+  [56,"Freezing drizzle","Llovizna helada","Plugim gelat","Orballo xeado","Bruine verglaçante","Chuvisco gelado"],
+  [57,"Dense freezing drizzle","Llovizna helada intensa","Plugim gelat intens","Orballo xeado intenso","Bruine verglaçante dense","Chuvisco gelado intenso"],
+  [61,"Light rain","Lluvia débil","Pluja feble","Choiva débil","Pluie faible","Chuva fraca"],
+  [63,"Moderate rain","Lluvia moderada","Pluja moderada","Choiva moderada","Pluie modérée","Chuva moderada"],
+  [65,"Heavy rain","Lluvia fuerte","Pluja forta","Choiva forte","Pluie forte","Chuva forte"],
+  [66,"Freezing rain","Lluvia helada","Pluja gelada","Choiva xeada","Pluie verglaçante","Chuva gelada"],
+  [67,"Heavy freezing rain","Lluvia helada fuerte","Pluja gelada forta","Choiva xeada forte","Pluie verglaçante forte","Chuva gelada forte"],
+  [71,"Light snow","Nieve débil","Neu feble","Neve débil","Neige faible","Neve fraca"],
+  [73,"Moderate snow","Nieve moderada","Neu moderada","Neve moderada","Neige modérée","Neve moderada"],
+  [75,"Heavy snow","Nieve fuerte","Neu forta","Neve forte","Neige forte","Neve forte"],
+  [77,"Snow grains","Cristales de nieve","Grans de neu","Grans de neve","Grains de neige","Grãos de neve"],
+  [80,"Light showers","Chubascos débiles","Ruixats febles","Chuvascos débiles","Averses faibles","Aguaceiros fracos"],
+  [81,"Moderate showers","Chubascos moderados","Ruixats moderats","Chuvascos moderados","Averses modérées","Aguaceiros moderados"],
+  [82,"Violent showers","Chubascos torrenciales","Ruixats forts","Chuvascos fortes","Averses violentes","Aguaceiros violentos"],
+  [85,"Light snow showers","Chubascos de nieve","Ruixats de neu","Nevaradas débiles","Averses de neige faibles","Aguaceiros de neve"],
+  [86,"Heavy snow showers","Chubascos de nieve fuertes","Ruixats de neu forts","Nevaradas fortes","Averses de neige fortes","Aguaceiros de neve fortes"],
+  [95,"Thunderstorm","Tormenta","Tempesta","Treboada","Orage","Trovoada"],
+  [96,"Thunderstorm with hail","Tormenta con granizo","Tempesta amb calamarsa","Treboada con sarabia","Orage avec grêle","Trovoada com granizo"],
+  [99,"Thunderstorm with heavy hail","Tormenta con granizo fuerte","Tempesta amb calamarsa forta","Treboada con sarabia forte","Orage avec forte grêle","Trovoada com granizo forte"]
+];
+const WMO_COL = { en:1, es:2, ca:3, gl:4, fr:5, pt:6 };
+const WMO_TXT = {};
+WMO_ROWS.forEach(r=>{ SUPPORTED.forEach(l=>{ (WMO_TXT[l]=WMO_TXT[l]||{})[r[0]]=r[WMO_COL[l]]; }); });
+function wmoText(code){ const m=WMO_TXT[LANG]||WMO_TXT.en; return m[code]!=null?m[code]:(m[3]||"—"); }
+
+const WIND_DIRS = {
+  en:["N","NE","E","SE","S","SW","W","NW"],
+  es:["N","NE","E","SE","S","SO","O","NO"],
+  ca:["N","NE","E","SE","S","SO","O","NO"],
+  gl:["N","NE","E","SE","S","SO","O","NO"],
+  fr:["N","NE","E","SE","S","SO","O","NO"],
+  pt:["N","NE","E","SE","S","SO","O","NO"]
+};
+function windDir(deg){ if(deg==null) return ""; return (WIND_DIRS[LANG]||WIND_DIRS.en)[Math.round(deg/45)%8]; }
+
+function dtf(opts){ try{ return new Intl.DateTimeFormat(BCP[LANG]||"en", opts); }catch(e){ return new Intl.DateTimeFormat("en", opts); } }
+function weekdayName(date){ return dtf({weekday:"long"}).format(date); }
+function formatFullDate(iso){ return dtf({weekday:"long",day:"numeric",month:"long"}).format(new Date(iso+"T00:00")); }
+function dayLabel(iso, isToday, isTomorrow){
+  if(isToday) return t("today");
+  if(isTomorrow) return t("tomorrow");
+  return weekdayName(new Date(iso+"T00:00"));
+}
+const shortDate = (iso)=>{ const d=new Date(iso+"T00:00"); return d.getDate()+"/"+(d.getMonth()+1); };
+
+// Language used for geocoding services (fallback for unsupported ones)
+const GEO_LANG = ["en","es","fr","pt"].includes(LANG) ? LANG : (LANG==="ca"||LANG==="gl" ? "es" : "en");
+
+/* ===================== Zoom lock (does not affect the map) ===================== */
 (function blockZoom(){
   ["gesturestart","gesturechange","gestureend"].forEach(ev=>
-    document.addEventListener(ev, (e)=>e.preventDefault(), {passive:false}));   // pellizco iOS Safari
-  document.addEventListener("wheel", (e)=>{ if(e.ctrlKey) e.preventDefault(); }, {passive:false}); // Ctrl/⌘ + rueda
-  document.addEventListener("keydown", (e)=>{                                    // Ctrl/⌘ + (+ - = 0)
+    document.addEventListener(ev, (e)=>e.preventDefault(), {passive:false}));
+  document.addEventListener("wheel", (e)=>{ if(e.ctrlKey) e.preventDefault(); }, {passive:false});
+  document.addEventListener("keydown", (e)=>{
     if((e.ctrlKey||e.metaKey) && ["+","-","=","0"].includes(e.key)) e.preventDefault();
   });
 })();
 
 function toast(msg, ms = 2600){
-  const t = $("toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove("show"), ms);
+  const el = $("toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(el._t); el._t = setTimeout(()=>el.classList.remove("show"), ms);
 }
 
-const WMO = {
-  0:["☀️","Despejado"],1:["🌤️","Mayormente despejado"],2:["⛅","Parcialmente nublado"],3:["☁️","Nublado"],
-  45:["🌫️","Niebla"],48:["🌫️","Niebla con escarcha"],
-  51:["🌦️","Llovizna débil"],53:["🌦️","Llovizna moderada"],55:["🌦️","Llovizna intensa"],
-  56:["🌧️","Llovizna helada"],57:["🌧️","Llovizna helada intensa"],
-  61:["🌧️","Lluvia débil"],63:["🌧️","Lluvia moderada"],65:["🌧️","Lluvia fuerte"],
-  66:["🌧️","Lluvia helada"],67:["🌧️","Lluvia helada fuerte"],
-  71:["🌨️","Nieve débil"],73:["🌨️","Nieve moderada"],75:["❄️","Nieve fuerte"],77:["🌨️","Cristales de nieve"],
-  80:["🌦️","Chubascos débiles"],81:["🌧️","Chubascos moderados"],82:["⛈️","Chubascos torrenciales"],
-  85:["🌨️","Chubascos de nieve"],86:["❄️","Chubascos de nieve fuertes"],
-  95:["⛈️","Tormenta"],96:["⛈️","Tormenta con granizo"],99:["⛈️","Tormenta con granizo fuerte"]
-};
-const wmo = (c) => WMO[c] || ["❓","—"];
-// severidad para elegir icono representativo de una franja
-const SEV = (c)=>{ if(c>=95)return 9; if(c>=80)return 8; if(c>=61)return 7; if(c>=71)return 6;
-  if(c>=51)return 5; if(c>=45)return 4; if(c===3)return 3; if(c===2)return 2; if(c===1)return 1; return 0; };
-
-/* ---- Iconos SVG del tiempo (limpios y consistentes) ---- */
-function catOf(code, isDay){
+/* ===================== Weather icons (inline SVG) ===================== */
+function iconCategory(code, isDay){
   if(code===0) return isDay?"sun":"moon";
-  if(code===1||code===2) return isDay?"partly":"partlyn";
+  if(code===1||code===2) return isDay?"partly":"partlyNight";
   if(code===3) return "cloud";
   if(code===45||code===48) return "fog";
   if((code>=51&&code<=67)||code===80||code===81||code===82) return "rain";
@@ -469,8 +720,12 @@ function catOf(code, isDay){
   if(code>=95) return "storm";
   return "cloud";
 }
+function severity(code){
+  if(code>=95)return 9; if(code>=80)return 8; if(code>=61)return 7; if(code>=71)return 6;
+  if(code>=51)return 5; if(code>=45)return 4; if(code===3)return 3; if(code===2)return 2; if(code===1)return 1; return 0;
+}
 function iconSVG(code, isDay, size){
-  size=size||30; const cat=catOf(code, isDay);
+  size=size||30; const cat=iconCategory(code, isDay);
   const rays=(cx,cy,r)=>{ let l=""; for(let i=0;i<8;i++){ const a=i*Math.PI/4;
     const x1=(cx+Math.cos(a)*(r+2)).toFixed(1), y1=(cy+Math.sin(a)*(r+2)).toFixed(1),
           x2=(cx+Math.cos(a)*(r+4.4)).toFixed(1), y2=(cy+Math.sin(a)*(r+4.4)).toFixed(1);
@@ -485,36 +740,88 @@ function iconSVG(code, isDay, size){
   const foglines=`<g stroke="#9fb0c8" stroke-width="1.8" stroke-linecap="round"><line x1="6" y1="18.5" x2="18" y2="18.5"/><line x1="8" y1="21.5" x2="20" y2="21.5"/></g>`;
   let inner;
   switch(cat){
-    case "sun":   inner=sun(12,12,5); break;
-    case "moon":  inner=moon; break;
-    case "partly":inner=sun(8.5,8.5,3.4)+cloud("#cbd5e1",3.5,4.5,0.7); break;
-    case "partlyn":inner=`<path d="M15.5 10.5A6 6 0 0 1 9 4.6 6.4 6.4 0 1 0 15.5 10.5z" fill="#dbe4f0"/>`+cloud("#cbd5e1",3.5,5,0.7); break;
-    case "cloud": inner=cloud("#cbd5e1",0,0.5,0.98); break;
-    case "fog":   inner=cloud("#cbd5e1",2.6,-1.5,0.78)+foglines; break;
-    case "rain":  inner=cloud("#cbd5e1",2.6,-0.5,0.8)+drops; break;
-    case "storm": inner=cloud("#b9c4d6",2.6,-0.5,0.8)+bolt; break;
-    case "snow":  inner=cloud("#cbd5e1",2.6,-0.5,0.8)+flakes; break;
-    default:      inner=cloud("#cbd5e1",0,0.5,0.98);
+    case "sun":        inner=sun(12,12,5); break;
+    case "moon":       inner=moon; break;
+    case "partly":     inner=sun(8.5,8.5,3.4)+cloud("#cbd5e1",3.5,4.5,0.7); break;
+    case "partlyNight":inner=`<path d="M15.5 10.5A6 6 0 0 1 9 4.6 6.4 6.4 0 1 0 15.5 10.5z" fill="#dbe4f0"/>`+cloud("#cbd5e1",3.5,5,0.7); break;
+    case "cloud":      inner=cloud("#cbd5e1",0,0.5,0.98); break;
+    case "fog":        inner=cloud("#cbd5e1",2.6,-1.5,0.78)+foglines; break;
+    case "rain":       inner=cloud("#cbd5e1",2.6,-0.5,0.8)+drops; break;
+    case "storm":      inner=cloud("#b9c4d6",2.6,-0.5,0.8)+bolt; break;
+    case "snow":       inner=cloud("#cbd5e1",2.6,-0.5,0.8)+flakes; break;
+    default:           inner=cloud("#cbd5e1",0,0.5,0.98);
   }
   return `<svg class="wi" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${inner}</svg>`;
 }
+const META_ICONS = {
+  temp:`<svg class="mi" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M14 14.8V5a2 2 0 1 0-4 0v9.8a3.5 3.5 0 1 0 4 0z" fill="none" stroke="#f87171" stroke-width="1.8"/><circle cx="12" cy="17.8" r="2" fill="#f87171"/></svg>`,
+  wind:`<svg class="mi" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="#9fb0c8" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10a2.4 2.4 0 1 0-2.4-2.4"/><path d="M3 12h14a2.4 2.4 0 1 1-2.4 2.4"/><path d="M3 16h8a2.4 2.4 0 1 1-2.4 2.4"/></svg>`,
+  hum:`<svg class="mi" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 3.2C12 3.2 6 9.7 6 14.4a6 6 0 0 0 12 0C18 9.7 12 3.2 12 3.2z" fill="#38bdf8"/></svg>`
+};
 
-const dayNames = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-function fmtDay(iso, isToday, isTomorrow){
-  if(isToday) return "Hoy";
-  if(isTomorrow) return "Mañana";
-  return dayNames[new Date(iso+"T00:00").getDay()];
-}
-const fmtDate = (iso)=>{ const d=new Date(iso+"T00:00"); return d.getDate()+"/"+(d.getMonth()+1); };
-// --- Escalas de ejes "bonitas" (marcas uniformes) ---
+/* ===================== Axis scale helpers (uniform ticks) ===================== */
 function niceStep(x){ if(x<=0) return 1; const mag=Math.pow(10,Math.floor(Math.log10(x))); const f=x/mag; const nf=f<=1?1:f<=2?2:f<=5?5:10; return nf*mag; }
 function niceMax(v){ if(v<=0) return 1; const step=niceStep(v/4); return +(step*4).toFixed(6); }
-const axfmt=(v)=> Number.isInteger(v)? String(v) : (Math.round(v*100)/100).toString();
+const axisFmt=(v)=> Number.isInteger(v)? String(v) : (Math.round(v*100)/100).toString();
+const getVar=(n)=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const formatMM=(v)=>(v==null?0:v).toFixed(1)+" mm";
 
 let STATE = { lat:null, lon:null, name:"", map:null, marker:null, radarLayerGroup:null };
 let CURRENT_DATA = null;
 
-/* ---- Overlay ---- */
+/* ===================== Static text (applies the active language) ===================== */
+function applyI18n(){
+  document.documentElement.lang = LANG;
+  document.title = t("brand")+" · "+t("hourly");
+  $("brandName").textContent = t("brand");
+  $("btnChange").innerHTML = "📍 "+t("change");
+  $("btnChange").title = t("change");
+  if(!STATE.name) $("locName").textContent = t("detecting");
+  if(!$("nowDesc").textContent) $("nowDesc").textContent = t("loading");
+  $("rainLabel").textContent = t("rain_prob");
+  $("mFeelsK").textContent = t("feels");
+  $("mWindK").textContent = t("wind");
+  $("mHumK").textContent = t("humidity");
+  $("titleHourly").textContent = t("hourly");
+  $("tabTemp").textContent = t("temperature");
+  $("tabPrecip").textContent = t("precipitation");
+  $("tabWind").textContent = t("wind");
+  $("legendTemp").innerHTML =
+    `<span class="lg"><span class="swatch" style="background:var(--warn)"></span> ${t("temperature")} (°)</span>`
+   +`<span class="lg"><span class="swatch" style="background:var(--rain)"></span> ${t("humidity")} (%)</span>`;
+  $("legendPrecip").innerHTML =
+    `<span class="lg"><span class="swatch" style="background:var(--rainpast)"></span> ${t("past_rain")} (mm)</span>`
+   +`<span class="lg"><span class="swatch" style="background:var(--rain)"></span> ${t("fore_rain")} (mm)</span>`
+   +`<span class="lg"><span class="swatch" style="background:var(--prob)"></span> ${t("prob")} (%)</span>`;
+  $("legendWind").innerHTML =
+    `<span class="lg"><span class="swatch" style="background:var(--accent2)"></span> ${t("wind")} (km/h)</span>`
+   +`<span class="lg"><span class="swatch" style="background:var(--muted)"></span> ${t("gusts")} (km/h)</span>`;
+  $("titleExtended").textContent = t("extended");
+  $("titleRadar").textContent = t("radar");
+  $("radarScaleLabel").textContent = t("radar_intensity");
+  $("radarWeak").textContent = t("weak");
+  $("radarStrong").textContent = t("strong");
+  $("csHdr").textContent = t("consensus_hdr");
+  $("csTitle").textContent = t("calculating");
+  $("ovTitle").textContent = t("where");
+  $("ovText").textContent = t("where_text");
+  $("btnGeo").innerHTML = "📍 "+t("use_location");
+  $("ovDivider").textContent = t("or_manual");
+  $("searchInput").placeholder = t("search_ph");
+  $("btnSearch").textContent = t("search_btn");
+  $("colHour").textContent = t("col_hour");
+  $("colTemp").textContent = t("col_temp");
+  $("colProb").textContent = t("col_prob");
+  $("colRain").textContent = t("col_rain");
+  $("dmPrev").setAttribute("aria-label","‹");
+  $("footer").innerHTML =
+    `${t("footer_data")} <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> · `
+   +`${t("footer_radar")} <a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a> · `
+   +`${t("footer_map")} © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>/CARTO · `
+   +`${t("layer_sat")} © Esri<br>${t("footer_demo")}`;
+}
+
+/* ===================== Location overlay ===================== */
 function showOverlay(msg, isErr){
   $("overlay").classList.remove("hidden");
   if(msg){ const s=$("ovStatus"); s.textContent=msg; s.classList.toggle("err", !!isErr); }
@@ -526,20 +833,20 @@ $("btnSearch").addEventListener("click", doSearch);
 $("searchInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter") doSearch(); });
 
 function requestPreciseLocation(){
-  if(!("geolocation" in navigator)){ showOverlay("Este dispositivo no permite geolocalización. Introduce tu población manualmente.", true); return; }
+  if(!("geolocation" in navigator)){ showOverlay(t("geo_unsupported"), true); return; }
   $("ovStatus").classList.remove("err");
-  $("ovStatus").innerHTML = '<span class="spinner"></span> Solicitando ubicación precisa…';
+  $("ovStatus").innerHTML = '<span class="spinner"></span> '+t("requesting");
   navigator.geolocation.getCurrentPosition(
     async (pos)=>{
       const { latitude, longitude } = pos.coords;
       const name = await reverseGeocode(latitude, longitude);
-      setLocation(latitude, longitude, name || "Mi ubicación"); hideOverlay();
+      setLocation(latitude, longitude, name || t("my_location")); hideOverlay();
     },
     (err)=>{
-      let m = "No se pudo obtener la ubicación. Introduce tu población manualmente.";
-      if(err.code===1) m = "Permiso de ubicación denegado. Introduce tu población manualmente.";
-      else if(err.code===2) m = "Ubicación no disponible. Introduce tu población manualmente.";
-      else if(err.code===3) m = "Se agotó el tiempo de espera. Introduce tu población manualmente.";
+      let m = t("geo_fail");
+      if(err.code===1) m = t("geo_denied");
+      else if(err.code===2) m = t("geo_unavailable");
+      else if(err.code===3) m = t("geo_timeout");
       showOverlay(m, true); $("searchInput").focus();
     },
     { enableHighAccuracy:true, timeout:12000, maximumAge:0 }
@@ -547,12 +854,12 @@ function requestPreciseLocation(){
 }
 async function doSearch(){
   const q = $("searchInput").value.trim();
-  if(q.length < 2){ showOverlay("Escribe al menos 2 caracteres.", true); return; }
-  const s=$("ovStatus"); s.classList.remove("err"); s.innerHTML='<span class="spinner"></span> Buscando…'; $("results").innerHTML="";
+  if(q.length < 2){ showOverlay(t("min2"), true); return; }
+  const s=$("ovStatus"); s.classList.remove("err"); s.innerHTML='<span class="spinner"></span> '+t("searching"); $("results").innerHTML="";
   try{
-    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=es&format=json`;
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=${GEO_LANG}&format=json`;
     const r = await fetch(url); const data = await r.json(); s.textContent="";
-    if(!data.results || !data.results.length){ showOverlay("Sin resultados. Prueba con otro nombre.", true); return; }
+    if(!data.results || !data.results.length){ showOverlay(t("no_results"), true); return; }
     const box = $("results");
     data.results.forEach(loc=>{
       const div=document.createElement("div"); div.className="result";
@@ -561,35 +868,34 @@ async function doSearch(){
       div.addEventListener("click", ()=>{ setLocation(loc.latitude, loc.longitude, `${loc.name}${loc.country_code?", "+loc.country_code:""}`); hideOverlay(); });
       box.appendChild(div);
     });
-  }catch(e){ showOverlay("Error de red al buscar. Reinténtalo.", true); }
+  }catch(e){ showOverlay(t("search_err"), true); }
 }
 async function reverseGeocode(lat, lon){
   try{
-    const url=`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
+    const url=`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${LANG}`;
     const r=await fetch(url); const d=await r.json();
     return d.city || d.locality || d.principalSubdivision || d.countryName || null;
   }catch(e){ return null; }
 }
 
-/* ---- Fijar ubicación ---- */
+/* ===================== Set location and refresh ===================== */
 function setLocation(lat, lon, name){
   STATE.lat=lat; STATE.lon=lon; STATE.name=name;
-  $("locName").textContent = name; document.title = `El Tiempo · ${name}`;
+  $("locName").textContent = name; document.title = `${t("brand")} · ${name}`;
   try{ localStorage.setItem(LS_KEY, JSON.stringify({lat,lon,name})); }catch(e){}
   loadWeather(); loadConsensus(lat,lon); initOrMoveRadar();
 }
 
-/* ---- Concordancia entre modelos meteorológicos (foco en precipitación) ---- */
+/* ===================== Model agreement (precipitation-focused) ===================== */
 const MODELS=[
-  {id:"ecmwf_ifs025", name:"ECMWF", who:"Europa"},
-  {id:"gfs_seamless", name:"GFS", who:"EE. UU."},
-  {id:"icon_seamless", name:"ICON", who:"Alemania"},
-  {id:"gem_seamless", name:"GEM", who:"Canadá"},
-  {id:"meteofrance_seamless", name:"Météo-France", who:"Francia"}
+  {id:"ecmwf_ifs025", name:"ECMWF"},
+  {id:"gfs_seamless", name:"GFS"},
+  {id:"icon_seamless", name:"ICON"},
+  {id:"gem_seamless", name:"GEM"},
+  {id:"meteofrance_seamless", name:"Météo-France"}
 ];
-const fmtMM=(v)=>(v==null?0:v).toFixed(1)+" mm";
-function hideConsensus(){ const s=$("consensus"), t=$("csSection"); if(s)s.style.display="none"; if(t)t.style.display="none"; }
-function showConsensus(){ const s=$("consensus"), t=$("csSection"); if(s)s.style.display=""; if(t)t.style.display=""; }
+function hideConsensus(){ $("consensus").style.display="none"; }
+function showConsensus(){ $("consensus").style.display=""; }
 
 async function loadConsensus(lat,lon){
   const ids=MODELS.map(m=>m.id).join(",");
@@ -612,40 +918,39 @@ function renderConsensus(rows){
   const usable=rows.filter(r=>r.usable);
   if(usable.length<2){ hideConsensus(); return; }
   showConsensus();
-  const predRain=(r)=> (r.prob>=50 || (r.sum!=null && r.sum>=1.0));
-  const rain=usable.filter(predRain).length, dry=usable.length-rain, n=usable.length;
+  const predictsRain=(r)=> (r.prob>=50 || (r.sum!=null && r.sum>=1.0));
+  const rain=usable.filter(predictsRain).length, dry=usable.length-rain, n=usable.length;
   const majorityRain=rain>n/2;
   const agree=Math.max(rain,dry)/n;
   const sums=usable.map(r=>r.sum==null?0:r.sum);
   const mmMin=Math.min(...sums), mmMax=Math.max(...sums), spread=mmMax-mmMin;
   const sorted=[...sums].sort((a,b)=>a-b), mmMed=sorted[Math.floor(sorted.length/2)];
-  let lvl,cls;
-  if(agree>=0.8 && spread<=3){ lvl="Alta"; cls="alta"; }
-  else if(agree<0.6 || spread>8){ lvl="Baja"; cls="baja"; }
-  else { lvl="Media"; cls="media"; }
+  let levelKey, cls;
+  if(agree>=0.8 && spread<=3){ levelKey="high"; cls="high"; }
+  else if(agree<0.6 || spread>8){ levelKey="low"; cls="low"; }
+  else { levelKey="medium"; cls="medium"; }
   const badge=$("csBadge"); badge.className="cs-badge "+cls;
-  badge.innerHTML=`Fiabilidad<span class="lvl">${lvl}</span>`;
+  badge.innerHTML=`${t("reliability")}<span class="lvl">${t(levelKey)}</span>`;
   $("csTitle").textContent = majorityRain
-    ? `${rain} de ${n} modelos prevén lluvia hoy`
-    : `${dry} de ${n} modelos no prevén lluvia hoy`;
+    ? t("models_rain",{n:rain,m:n})
+    : t("models_dry",{n:dry,m:n});
   let sub;
-  if(cls==="alta"){
-    sub = majorityRain ? `Alta concordancia. Se esperan del orden de ${fmtMM(mmMed)}.`
-                       : "Alta concordancia: hoy sin lluvia significativa.";
-  } else if(cls==="media"){
-    sub = `Concordancia parcial (lluvia estimada entre ${fmtMM(mmMin)} y ${fmtMM(mmMax)}). Para el corto plazo, guíate por el radar y la previsión por horas.`;
+  if(cls==="high"){
+    sub = majorityRain ? t("agree_high_rain",{mm:formatMM(mmMed)}) : t("agree_high_dry");
+  } else if(cls==="medium"){
+    sub = t("agree_medium",{a:formatMM(mmMin), b:formatMM(mmMax)});
   } else {
-    sub = `Los modelos discrepan (entre ${fmtMM(mmMin)} y ${fmtMM(mmMax)}). Fiabilidad baja: vigila el radar y la previsión por horas antes de decidir.`;
+    sub = t("agree_low",{a:formatMM(mmMin), b:formatMM(mmMax)});
   }
   $("csSub").textContent=sub;
   $("csModels").innerHTML=rows.map(r=>{
-    const c=!r.usable?"na":(predRain(r)?"rain":"dry");
-    const vals=r.usable?`${r.prob}% · ${fmtMM(r.sum)}`:"sin datos";
+    const c=!r.usable?"na":(predictsRain(r)?"rain":"dry");
+    const vals=r.usable?`${r.prob}% · ${formatMM(r.sum)}`:t("no_data");
     return `<span class="cs-m"><span class="dot ${c}"></span><span class="nm">${r.name}</span><span class="vals">${vals}</span></span>`;
   }).join("");
 }
 
-/* ---- Carga meteorológica ---- */
+/* ===================== Weather data ===================== */
 async function loadWeather(){
   const {lat,lon}=STATE;
   const url = "https://api.open-meteo.com/v1/forecast"
@@ -656,25 +961,24 @@ async function loadWeather(){
     + "&forecast_days=16&past_days=1&timezone=auto";
   try{
     const r=await fetch(url); const d=await r.json();
-    if(d.error) throw new Error(d.reason||"error API");
+    if(d.error) throw new Error(d.reason||"API error");
     d._idx = buildIndex(d);
     CURRENT_DATA=d;
     renderCurrent(d); renderDays(d, 15); renderRainNow(d); renderHourly(d);
-  }catch(e){ toast("No se pudieron cargar los datos meteorológicos."); $("nowDesc").textContent="Error al cargar datos"; }
+  }catch(e){ toast(t("weather_err")); $("nowDesc").textContent=t("err_load"); }
 }
 
-// Índices y agrupación por fecha (past_days desplaza los arrays)
+// Index helpers and per-date grouping (past_days shifts the arrays)
 function buildIndex(d){
-  const curPrefix = d.current.time.slice(0,13);          // YYYY-MM-DDTHH
+  const curPrefix = d.current.time.slice(0,13);   // YYYY-MM-DDTHH
   const curDate   = d.current.time.slice(0,10);
-  let nowIdx = d.hourly.time.findIndex(t=>t.slice(0,13)===curPrefix);
-  if(nowIdx<0) nowIdx = d.hourly.time.findIndex(t=>t.slice(0,10)===curDate);
+  let nowIdx = d.hourly.time.findIndex(x=>x.slice(0,13)===curPrefix);
+  if(nowIdx<0) nowIdx = d.hourly.time.findIndex(x=>x.slice(0,10)===curDate);
   let todayIdx = d.daily.time.indexOf(curDate);
   if(todayIdx<0) todayIdx = Math.max(0, d.daily.time.length-16);
-  // agrupar horas por fecha
   const byDate={};
-  d.hourly.time.forEach((t,i)=>{
-    const day=t.slice(0,10), h=+t.slice(11,13);
+  d.hourly.time.forEach((x,i)=>{
+    const day=x.slice(0,10), h=+x.slice(11,13);
     (byDate[day]=byDate[day]||[]).push({h, temp:d.hourly.temperature_2m[i],
       code:d.hourly.weather_code[i], prob:d.hourly.precipitation_probability[i]||0});
   });
@@ -683,47 +987,50 @@ function buildIndex(d){
 
 function renderCurrent(d){
   const c=d.current, u=d.current_units||{};
-  const [,desc]=wmo(c.weather_code);
   $("nowIco").innerHTML = iconSVG(c.weather_code, c.is_day!==0, 64);
   $("nowTemp").textContent = Math.round(c.temperature_2m)+"°";
-  $("nowDesc").textContent = desc;
+  $("nowDesc").textContent = wmoText(c.weather_code);
   $("mFeels").textContent = Math.round(c.apparent_temperature)+"°";
   $("mWind").textContent = Math.round(c.wind_speed_10m)+" "+(u.wind_speed_10m||"km/h");
   $("mHum").textContent = Math.round(c.relative_humidity_2m)+"%";
-  const t=d._idx.todayIdx, dd=d.daily;
-  $("nowMinMax").innerHTML = `<span class="mx">↑ <b>${Math.round(dd.temperature_2m_max[t])}°</b></span>`
-    + `<span class="mn">↓ <b>${Math.round(dd.temperature_2m_min[t])}°</b></span>`;
+  const t0=d._idx.todayIdx, dd=d.daily;
+  $("nowMinMax").innerHTML = `<span class="mx">↑ <b>${Math.round(dd.temperature_2m_max[t0])}°</b></span>`
+    + `<span class="mn">↓ <b>${Math.round(dd.temperature_2m_min[t0])}°</b></span>`;
 }
-function nightIcon(code, dayIco){ if(code===0) return "🌙"; if(code===1||code===2) return "☁️"; return dayIco; }
 
-/* ---- Franja mañana/tarde ---- */
+// Morning / afternoon segment from the hourly entries of a day
 function segment(entries, from, to, repHour){
   const sel = entries.filter(e=>e.h>=from && e.h<to);
   if(!sel.length) return null;
   let prob=0, rep=sel[0], bestSev=-1;
-  sel.forEach(e=>{ if(e.prob>prob) prob=e.prob; const s=SEV(e.code); if(s>bestSev){bestSev=s;rep=e;} });
-  let repHourEntry = sel.find(e=>e.h===repHour);
+  sel.forEach(e=>{ if(e.prob>prob) prob=e.prob; const s=severity(e.code); if(s>bestSev){bestSev=s;rep=e;} });
+  const repHourEntry = sel.find(e=>e.h===repHour);
   const temp = Math.round((repHourEntry||sel[Math.floor(sel.length/2)]).temp);
   return { code:rep.code, prob:Math.round(prob), temp };
 }
+function fallbackSeg(dd,i){ return { code:dd.weather_code[i], prob:dd.precipitation_probability_max[i]||0, temp:Math.round(dd.temperature_2m_max[i]) }; }
+function segHTML(label, s){
+  const prob = s.prob>0 ? `<div class="seg-prob">💧 ${s.prob}%</div>` : "";
+  return `<div class="seg"><span class="seg-when">${label}</span><span class="seg-ico">${iconSVG(s.code,true,30)}</span><span class="seg-temp">${s.temp}°</span>${prob}</div>`;
+}
 
-/* ---- Carrusel de días ---- */
+/* ===================== Day carousel ===================== */
 function renderDays(d, n){
   const dd=d.daily, idx=d._idx, box=$("days"); box.innerHTML="";
   const start=idx.todayIdx, end=Math.min(dd.time.length, start+n);
   for(let i=start;i<end;i++){
     const iso=dd.time[i], entries=idx.byDate[iso]||[];
     const isToday=(iso===idx.curDate);
-    const manana = segment(entries, 6, 14, 9)  || fallbackSeg(dd,i);
-    const tarde  = segment(entries, 14, 21, 16) || fallbackSeg(dd,i);
+    const morning = segment(entries, 6, 14, 9)  || fallbackSeg(dd,i);
+    const afternoon = segment(entries, 14, 21, 16) || fallbackSeg(dd,i);
     const card=document.createElement("div"); card.className="day-card"+(isToday?" today":"");
     card.dataset.date=iso;
     card.addEventListener("click", ()=>openDayModal(iso));
     card.innerHTML =
-      `<div class="dc-head"><span class="dc-name">${fmtDay(iso,isToday, i===start+1)}</span><span class="dc-date">${fmtDate(iso)}</span></div>`+
-      segHTML("Mañana", manana)+
-      segHTML("Tarde", tarde)+
-      `<div class="dc-foot"><span>mín <b>${Math.round(dd.temperature_2m_min[i])}°</b></span><span>máx <b>${Math.round(dd.temperature_2m_max[i])}°</b></span></div>`;
+      `<div class="dc-head"><span class="dc-name">${dayLabel(iso,isToday, i===start+1)}</span><span class="dc-date">${shortDate(iso)}</span></div>`+
+      segHTML(t("morning"), morning)+
+      segHTML(t("afternoon"), afternoon)+
+      `<div class="dc-foot"><span>${t("min_l")} <b>${Math.round(dd.temperature_2m_min[i])}°</b></span><span>${t("max_l")} <b>${Math.round(dd.temperature_2m_max[i])}°</b></span></div>`;
     box.appendChild(card);
   }
   updateCarouselUI();
@@ -735,13 +1042,9 @@ function updateCarouselUI(){
   const atEnd = c.scrollLeft + c.clientWidth >= c.scrollWidth - 6;
   fade.classList.toggle("show", scrollable && !atEnd);
 }
-function fallbackSeg(dd,i){ return { code:dd.weather_code[i], prob:dd.precipitation_probability_max[i]||0, temp:Math.round(dd.temperature_2m_max[i]) }; }
-function segHTML(label, s){
-  const prob = s.prob>0 ? `<div class="seg-prob">💧 ${s.prob}%</div>` : "";
-  return `<div class="seg"><span class="seg-when">${label}</span><span class="seg-ico">${iconSVG(s.code,true,30)}</span><span class="seg-temp">${s.temp}°</span>${prob}</div>`;
-}
+$("days").addEventListener("scroll", updateCarouselUI);
 
-/* ---- Pop-up: detalle horario del día (navegable) ---- */
+/* ===================== Day detail popup (navigable) ===================== */
 let dayModalOpen=false, dmIndex=0, dmMin=0, dmMax=0;
 function openDayModal(iso){
   const d=CURRENT_DATA; if(!d) return;
@@ -756,19 +1059,18 @@ function openDayModal(iso){
 function renderDayModal(dir){
   const d=CURRENT_DATA; if(!d) return;
   const dd=d.daily, idx=d._idx, di=dmIndex, iso=dd.time[di];
-  const label=(iso===idx.curDate)?"Hoy":dayNames[new Date(iso+"T00:00").getDay()];
-  const [,desc]=wmo(dd.weather_code[di]);
+  const label=(iso===idx.curDate)?t("today"):weekdayName(new Date(iso+"T00:00"));
   $("dmTitle").textContent=label;
   $("dmIco").innerHTML=iconSVG(dd.weather_code[di], true, 46);
   const sum=dd.precipitation_sum[di]||0;
-  $("dmSub").innerHTML=`${fmtFullDate(iso)} · ${desc}<br>máx <b>${Math.round(dd.temperature_2m_max[di])}°</b> · mín <b>${Math.round(dd.temperature_2m_min[di])}°</b>`
-    + (sum>0?` · lluvia total <b>${sum.toFixed(1)} mm</b>`:"");
+  $("dmSub").innerHTML=`${formatFullDate(iso)} · ${wmoText(dd.weather_code[di])}<br>${t("max_l")} <b>${Math.round(dd.temperature_2m_max[di])}°</b> · ${t("min_l")} <b>${Math.round(dd.temperature_2m_min[di])}°</b>`
+    + (sum>0?` · ${t("total_rain",{mm:"<b>"+sum.toFixed(1)+" mm</b>"})}`:"");
   const body=$("dmBody"); const h=d.hourly; let rows="";
   for(let i=0;i<h.time.length;i++){
     if(h.time[i].slice(0,10)!==iso) continue;
     const hr=+h.time[i].slice(11,13), isDay=hr>=7 && hr<21;
     const prob=h.precipitation_probability[i]||0, mm=h.precipitation[i]||0, isNow=(i===idx.nowIdx);
-    const sens=Math.round(h.apparent_temperature[i]), wind=Math.round(h.wind_speed_10m[i]), hum=Math.round(h.relative_humidity_2m[i]), wdir=dirText(h.wind_direction_10m[i]);
+    const sens=Math.round(h.apparent_temperature[i]), wind=Math.round(h.wind_speed_10m[i]), hum=Math.round(h.relative_humidity_2m[i]), wdir=windDir(h.wind_direction_10m[i]);
     rows+=`<div class="dm-row${isNow?" now":""}">`
       +`<div class="dm-main">`
         +`<span class="dm-time">${String(hr).padStart(2,"0")}:00${isNow?" ·":""}</span>`
@@ -777,14 +1079,13 @@ function renderDayModal(dir){
         +`<span class="dm-prob${prob>0?"":" zero"}">${prob}%</span>`
         +`<span class="dm-mm${mm>0?"":" zero"}">${mm>0?mm.toFixed(1)+" mm":"0"}</span>`
       +`</div>`
-      +`<div class="dm-meta"><span>${MI.temp} Sens. ${sens}°</span><span>${MI.wind} ${wind} km/h${wdir?" "+wdir:""}</span><span>${MI.hum} ${hum}%</span></div>`
+      +`<div class="dm-meta"><span>${META_ICONS.temp} ${t("feels_short")} ${sens}°</span><span>${META_ICONS.wind} ${wind} km/h${wdir?" "+wdir:""}</span><span>${META_ICONS.hum} ${hum}%</span></div>`
       +`</div>`;
   }
-  body.innerHTML=rows||'<div class="chart-empty">Sin datos horarios para este día.</div>';
+  body.innerHTML=rows||`<div class="chart-empty">${t("no_hourly")}</div>`;
   $("dmPrev").disabled = di<=dmMin;
   $("dmNext").disabled = di>=dmMax;
   const nowRow=body.querySelector(".dm-row.now"); if(nowRow) nowRow.scrollIntoView({block:"center"}); else body.scrollTop=0;
-  // animación de deslizamiento al cambiar de día
   if(dir){ body.style.animation="none"; requestAnimationFrame(()=>{ body.style.animation=`dmSlide${dir>0?"L":"R"} .22s ease`; }); }
 }
 function goDay(delta){ const ni=Math.max(dmMin, Math.min(dmMax, dmIndex+delta)); if(ni!==dmIndex){ dmIndex=ni; renderDayModal(delta); } }
@@ -805,56 +1106,43 @@ window.addEventListener("keydown", (e)=>{
   else if(e.key==="ArrowRight") goDay(1);
 });
 window.addEventListener("popstate", ()=>{ if(dayModalOpen) closeDayModal(true); });
-// Swipe horizontal para cambiar de día
-(function(){
+(function daySwipe(){
   let x0=null,y0=null;
   const card=$("dmCard");
-  card.addEventListener("touchstart",(e)=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; },{passive:true});
+  card.addEventListener("touchstart",(e)=>{ const p=e.touches[0]; x0=p.clientX; y0=p.clientY; },{passive:true});
   card.addEventListener("touchend",(e)=>{
-    if(x0==null) return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0;
+    if(x0==null) return; const p=e.changedTouches[0], dx=p.clientX-x0, dy=p.clientY-y0;
     if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.4){ goDay(dx<0?1:-1); }
     x0=y0=null;
   },{passive:true});
 })();
-function fmtFullDate(iso){
-  const d=new Date(iso+"T00:00");
-  const dias=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-  const meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-  return `${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]}`;
-}
-function dirText(deg){ if(deg==null) return ""; const d=["N","NE","E","SE","S","SO","O","NO"]; return d[Math.round(deg/45)%8]; }
-const MI={
-  temp:`<svg class="mi" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M14 14.8V5a2 2 0 1 0-4 0v9.8a3.5 3.5 0 1 0 4 0z" fill="none" stroke="#f87171" stroke-width="1.8"/><circle cx="12" cy="17.8" r="2" fill="#f87171"/></svg>`,
-  wind:`<svg class="mi" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="#9fb0c8" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10a2.4 2.4 0 1 0-2.4-2.4"/><path d="M3 12h14a2.4 2.4 0 1 1-2.4 2.4"/><path d="M3 16h8a2.4 2.4 0 1 1-2.4 2.4"/></svg>`,
-  hum:`<svg class="mi" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 3.2C12 3.2 6 9.7 6 14.4a6 6 0 0 0 12 0C18 9.7 12 3.2 12 3.2z" fill="#38bdf8"/></svg>`
-};
 
-/* ---- Probabilidad ahora ---- */
+/* ===================== Chance of rain (gauge) ===================== */
 function renderRainNow(d){
   const idx=d._idx, hp=d.hourly.precipitation_probability;
   let nowProb=0;
   if(idx.nowIdx>=0){ const win=hp.slice(idx.nowIdx, idx.nowIdx+6).filter(v=>v!=null); if(win.length) nowProb=Math.max(...win); }
-  if(!nowProb){ const t=idx.todayIdx; nowProb=d.daily.precipitation_probability_max[t]||0; }
+  if(!nowProb){ nowProb=d.daily.precipitation_probability_max[idx.todayIdx]||0; }
   const arc=$("gaugeArc"), C=251.2;
   arc.style.strokeDashoffset = C - (C*nowProb/100);
   arc.style.stroke = nowProb>=60 ? "var(--accent)" : nowProb>=30 ? "var(--prob)" : "var(--rain)";
   $("gaugeVal").textContent = Math.round(nowProb)+"%";
   const rainingNow = (d.current && d.current.precipitation>0);
   let big, sub;
-  if(rainingNow){ big="🌧️ Está lloviendo ahora"; sub=`${d.current.precipitation} mm en la última hora.`; }
-  else if(nowProb>=60){ big="Lluvia muy probable"; sub="Alta probabilidad de precipitación en las próximas horas."; }
-  else if(nowProb>=30){ big="Posibilidad de lluvia"; sub="Podría llover; consulta la gráfica y el radar."; }
-  else if(nowProb>0){ big="Lluvia poco probable"; sub="Bajo riesgo de precipitación por ahora."; }
-  else { big="☀️ Sin lluvia prevista"; sub="No se espera precipitación en las próximas horas."; }
+  if(rainingNow){ big="🌧️ "+t("raining_now"); sub=t("raining_now_sub",{mm:d.current.precipitation}); }
+  else if(nowProb>=60){ big=t("very_likely"); sub=t("very_likely_sub"); }
+  else if(nowProb>=30){ big=t("possible"); sub=t("possible_sub"); }
+  else if(nowProb>0){ big=t("unlikely"); sub=t("unlikely_sub"); }
+  else { big="☀️ "+t("none"); sub=t("none_sub"); }
   $("rainBig").textContent=big; $("rainSub").textContent=sub;
   const total=d.daily.precipitation_sum[idx.todayIdx]||0;
-  $("rainHint").textContent = total>0 ? `hoy: ${total.toFixed(1)} mm acumulados` : "";
+  $("rainHint").textContent = total>0 ? t("today_accum",{mm:total.toFixed(1)}) : "";
 }
 
-/* ---- Gráfica ±12h ---- */
+/* ===================== Precipitation chart (±12h) ===================== */
 function renderPrecipChart(d){
   const cv=$("precipChart"), empty=$("chartEmpty"), scroll=$("chartScroll"), idx=d._idx;
-  if(idx.nowIdx<0 || !d.hourly.time.length){ cv.style.display="none"; empty.style.display="block"; empty.textContent="No hay datos de precipitación para esta zona."; return; }
+  if(idx.nowIdx<0 || !d.hourly.time.length){ cv.style.display="none"; empty.style.display="block"; empty.textContent=t("precip_no_data"); return; }
   cv.style.display="block"; empty.style.display="none";
   const start=Math.max(0, idx.nowIdx-12), end=Math.min(d.hourly.time.length-1, idx.nowIdx+12);
   const times=[], precip=[], prob=[], past=[];
@@ -864,27 +1152,23 @@ function renderPrecipChart(d){
     prob.push(d.hourly.precipitation_probability[i]||0);
     past.push(i<idx.nowIdx);
   }
-  const nowPos = idx.nowIdx - start;               // columna de "ahora"
+  const nowPos = idx.nowIdx - start;
   const N=times.length, hourW=54, padT=14, padB=34;
   const H=196, plotH=H-padT-padB;
   const cssW=N*hourW;
   const dpr=window.devicePixelRatio||1;
   cv.style.width=cssW+"px"; cv.style.height=H+"px"; cv.width=cssW*dpr; cv.height=H*dpr;
   const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,cssW,H);
-  const st=getComputedStyle(document.documentElement);
-  const cRain=st.getPropertyValue("--rain").trim(), cPast=st.getPropertyValue("--rainpast").trim(),
-        cProb=st.getPropertyValue("--prob").trim(), cLine=st.getPropertyValue("--line").trim(),
-        cMuted=st.getPropertyValue("--muted").trim(), cAccent=st.getPropertyValue("--accent").trim();
+  const font=getVar("--font");
+  const cRain=getVar("--rain"), cPast=getVar("--rainpast"), cProb=getVar("--prob"),
+        cLine=getVar("--line"), cMuted=getVar("--muted"), cAccent=getVar("--accent");
   const maxP=niceMax(Math.max(0.5, Math.max(...precip)*1.2));
 
-  // rejilla horizontal
   ctx.strokeStyle=cLine; ctx.lineWidth=1;
   for(let g=0;g<=4;g++){ const y=padT+plotH*g/4; ctx.globalAlpha=.5; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cssW,y); ctx.stroke(); }
   ctx.globalAlpha=1;
-  // sombreado del pasado
   ctx.fillStyle=cLine; ctx.globalAlpha=.18; ctx.fillRect(0,padT, nowPos*hourW, plotH); ctx.globalAlpha=1;
 
-  // barras de lluvia
   const barW=hourW*0.56;
   precip.forEach((v,i)=>{
     const x=i*hourW+(hourW-barW)/2, bh=(v/maxP)*plotH;
@@ -893,7 +1177,6 @@ function renderPrecipChart(d){
   });
   ctx.globalAlpha=1;
 
-  // probabilidad: área translúcida + línea (magnitud distinta de la cantidad)
   const px=(i)=>i*hourW+hourW/2, py=(p)=>padT+plotH*(1-p/100);
   ctx.fillStyle=cProb; ctx.globalAlpha=.13;
   ctx.beginPath(); ctx.moveTo(px(0),padT+plotH);
@@ -907,36 +1190,30 @@ function renderPrecipChart(d){
   prob.forEach((p,i)=>{ ctx.fillStyle=cProb; ctx.globalAlpha=past[i]?.5:1; ctx.beginPath(); ctx.arc(px(i),py(p),3,0,7); ctx.fill(); });
   ctx.globalAlpha=1;
 
-  // marcador AHORA
   const nx=nowPos*hourW+hourW/2;
   ctx.strokeStyle=cAccent; ctx.lineWidth=2; ctx.setLineDash([5,4]);
   ctx.beginPath(); ctx.moveTo(nx,padT-4); ctx.lineTo(nx,padT+plotH); ctx.stroke(); ctx.setLineDash([]);
-  ctx.fillStyle=cAccent; ctx.font="600 11px "+st.getPropertyValue("--font"); ctx.textAlign="center";
-  ctx.fillText("AHORA", nx, padT-6);
+  ctx.fillStyle=cAccent; ctx.font="600 11px "+font; ctx.textAlign="center";
+  ctx.fillText(t("now"), nx, padT-6);
 
-  // etiquetas de hora
-  ctx.fillStyle=cMuted; ctx.font="10px "+st.getPropertyValue("--font"); ctx.textAlign="center";
-  times.forEach((t,i)=>{ const hh=t.slice(11,13); ctx.fillText(hh+"h", i*hourW+hourW/2, H-14); });
+  ctx.fillStyle=cMuted; ctx.font="10px "+font; ctx.textAlign="center";
+  times.forEach((x,i)=>{ ctx.fillText(x.slice(11,13)+"h", i*hourW+hourW/2, H-14); });
 
-  // ejes fijos (mm izq, % der)
   const yl=$("yLeft"), yr=$("yRight"); yl.innerHTML=""; yr.innerHTML="";
   for(let g=0;g<=4;g++){
     const y=padT+plotH*g/4-6, mm=maxP*(1-g/4), pc=Math.round(100*(1-g/4));
-    const l=document.createElement("span"); l.style.top=y+"px"; l.textContent=axfmt(Math.round(mm*100)/100); yl.appendChild(l);
+    const l=document.createElement("span"); l.style.top=y+"px"; l.textContent=axisFmt(Math.round(mm*100)/100); yl.appendChild(l);
     const rr=document.createElement("span"); rr.style.top=y+"px"; rr.textContent=pc+"%"; yr.appendChild(rr);
   }
-  // centrar "ahora"
   requestAnimationFrame(()=>{ scroll.scrollLeft = Math.max(0, nx - scroll.clientWidth/2); });
 }
 function roundRect(ctx,x,y,w,h,r){ r=Math.min(r,w/2,h/2); if(r<0)r=0;
   ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
   ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 window.addEventListener("resize", ()=>{ if(CURRENT_DATA){ activateHourlyTab(HOURLY_TAB); updateCarouselUI(); } });
-$("days").addEventListener("scroll", updateCarouselUI);
 
-/* ====================== Hora a hora (pestañas) ====================== */
+/* ===================== Hourly tabs ===================== */
 let HOURLY_TAB="temp";
-const getVar=(n)=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function buildWindow(d){
   const idx=d._idx, h=d.hourly;
   if(!h||!h.time||idx.nowIdx<0) return null;
@@ -946,11 +1223,10 @@ function buildWindow(d){
   return {start,end,nowPos:idx.nowIdx-start,times,past, val:(k)=>{const a=[];for(let i=start;i<=end;i++)a.push(h[k]?h[k][i]:null);return a;}};
 }
 function renderHourly(d){ renderTempChart(d); renderPrecipChart(d); renderWindChart(d); setDefaultHourlyTab(d); }
-
 function activateHourlyTab(tab){
   HOURLY_TAB=tab;
   document.querySelectorAll("#hourlyTabs button").forEach(b=>b.classList.toggle("active", b.dataset.tab===tab));
-  [["temp","panelTemp"],["precip","panelPrecip"],["wind","panelWind"]].forEach(([t,id])=>$(id).classList.toggle("active", t===tab));
+  [["temp","panelTemp"],["precip","panelPrecip"],["wind","panelWind"]].forEach(([tb,id])=>$(id).classList.toggle("active", tb===tab));
   if(!CURRENT_DATA) return;
   if(tab==="temp") renderTempChart(CURRENT_DATA);
   else if(tab==="precip") renderPrecipChart(CURRENT_DATA);
@@ -959,7 +1235,7 @@ function activateHourlyTab(tab){
 $("hourlyTabs").addEventListener("click",(e)=>{ if(e.target.tagName==="BUTTON") activateHourlyTab(e.target.dataset.tab); });
 
 function setDefaultHourlyTab(d){
-  const idx=d._idx, h=d.hourly, t=idx.todayIdx;
+  const idx=d._idx, h=d.hourly, t0=idx.todayIdx;
   let maxWind=0, maxGust=0, precipSoon=false;
   const e=Math.min(h.time.length-1, idx.nowIdx+12);
   for(let i=Math.max(0,idx.nowIdx);i<=e;i++){
@@ -967,7 +1243,7 @@ function setDefaultHourlyTab(d){
     if(h.wind_gusts_10m) maxGust=Math.max(maxGust, h.wind_gusts_10m[i]||0);
     if((h.precipitation_probability[i]||0)>=50 || (h.precipitation[i]||0)>=0.5) precipSoon=true;
   }
-  const precipToday=(d.daily.precipitation_sum[t]||0)>=1 || (d.daily.precipitation_probability_max[t]||0)>=50;
+  const precipToday=(d.daily.precipitation_sum[t0]||0)>=1 || (d.daily.precipitation_probability_max[t0]||0)>=50;
   let tab="temp";
   if(precipSoon || precipToday) tab="precip";
   else if(maxWind>=40 || maxGust>=55) tab="wind";
@@ -978,7 +1254,7 @@ function renderTempChart(d){
   const w=buildWindow(d); if(!w) return;
   const temp=w.val("temperature_2m"), hum=w.val("relative_humidity_2m").map(v=>v==null?0:v);
   const tv=temp.filter(v=>v!=null); const tmin=Math.min(...tv), tmax=Math.max(...tv);
-  let lo=Math.floor(tmin)-1, hi=Math.ceil(tmax)+1; const sp=hi-lo; hi+=(4-(sp%4))%4;   // rango múltiplo de 4 → marcas enteras uniformes
+  let lo=Math.floor(tmin)-1, hi=Math.ceil(tmax)+1; const sp=hi-lo; hi+=(4-(sp%4))%4;   // multiple of 4 for whole-number ticks
   drawSeriesChart($("chartTemp"),$("scrollTemp"),$("yLeftTemp"),$("yRightTemp"),{
     times:w.times,past:w.past,nowPos:w.nowPos,
     primary:{data:temp,color:getVar("--warn"),min:lo,max:hi,fill:true,unit:"°",showValues:true},
@@ -996,10 +1272,9 @@ function renderWindChart(d){
     times:w.times,past:w.past,nowPos:w.nowPos,
     primary:{data:wind,color:getVar("--accent2"),min:0,max:top,fill:true,unit:"",showValues:true},
     secondary: gust?{data:gust,color:getVar("--muted"),min:0,max:top,axis:"left"}:null,
-    sub:(i)=>dirText(dir[i])
+    sub:(i)=>windDir(dir[i])
   });
 }
-
 function drawSeriesChart(cv, scroll, yL, yR, cfg){
   const {times,past,nowPos,primary:p,secondary:s,sub}=cfg;
   const N=times.length, hourW=54, padT=14, padB=sub?46:34, H=sub?208:196, plotH=H-padT-padB;
@@ -1014,8 +1289,8 @@ function drawSeriesChart(cv, scroll, yL, yR, cfg){
   const px=(i)=>i*hourW+hourW/2, mapY=(v,mn,mx)=>padT+plotH*(1-(v-mn)/((mx-mn)||1));
   const yP=(v)=>mapY(v,p.min,p.max);
   if(p.fill){
-    ctx.fillStyle=p.color; ctx.globalAlpha=.14; ctx.beginPath(); let st0=false;
-    for(let i=0;i<N;i++){ if(p.data[i]==null) continue; const x=px(i),y=yP(p.data[i]); if(!st0){ctx.moveTo(x,padT+plotH);ctx.lineTo(x,y);st0=true;} else ctx.lineTo(x,y); }
+    ctx.fillStyle=p.color; ctx.globalAlpha=.14; ctx.beginPath(); let started=false;
+    for(let i=0;i<N;i++){ if(p.data[i]==null) continue; const x=px(i),y=yP(p.data[i]); if(!started){ctx.moveTo(x,padT+plotH);ctx.lineTo(x,y);started=true;} else ctx.lineTo(x,y); }
     ctx.lineTo(px(N-1),padT+plotH); ctx.closePath(); ctx.fill(); ctx.globalAlpha=1;
   }
   drawLine(ctx,p.data,px,yP,p.color,past,nowPos);
@@ -1024,9 +1299,9 @@ function drawSeriesChart(cv, scroll, yL, yR, cfg){
     for(let i=0;i<N;i+=3){ if(p.data[i]==null) continue; ctx.fillText(Math.round(p.data[i])+(p.unit||""), px(i), yP(p.data[i])-8); } }
   const nx=px(nowPos); ctx.strokeStyle=cAccent; ctx.lineWidth=2; ctx.setLineDash([5,4]);
   ctx.beginPath(); ctx.moveTo(nx,padT-4); ctx.lineTo(nx,padT+plotH); ctx.stroke(); ctx.setLineDash([]);
-  ctx.fillStyle=cAccent; ctx.font="600 11px "+font; ctx.textAlign="center"; ctx.fillText("AHORA",nx,padT-6);
+  ctx.fillStyle=cAccent; ctx.font="600 11px "+font; ctx.textAlign="center"; ctx.fillText(t("now"),nx,padT-6);
   ctx.fillStyle=cMuted; ctx.font="10px "+font; ctx.textAlign="center";
-  times.forEach((t,i)=>{ ctx.fillText(t.slice(11,13)+"h", px(i), H-(sub?28:14)); if(sub){ const sv=sub(i); if(sv) ctx.fillText(sv, px(i), H-12); } });
+  times.forEach((x,i)=>{ ctx.fillText(x.slice(11,13)+"h", px(i), H-(sub?28:14)); if(sub){ const sv=sub(i); if(sv) ctx.fillText(sv, px(i), H-12); } });
   fillAxis(yL, p.min, p.max, p.unit||"");
   if(yR){ if(s && s.axis==="right") fillAxis(yR, s.min, s.max, s.unit||""); else yR.innerHTML=""; }
   requestAnimationFrame(()=>{ scroll.scrollLeft=Math.max(0, nx - scroll.clientWidth/2); });
@@ -1046,25 +1321,24 @@ function fillAxis(el,min,max,unit){
     const sp=document.createElement("span"); sp.style.top=y+"px"; sp.textContent=Math.round(v)+unit; el.appendChild(sp); }
 }
 
-/* ---- Radar + capas ---- */
+/* ===================== Radar and layers ===================== */
 let radarState = { frames:[], idx:0, layers:{}, playing:true, timer:null, host:"" };
 function initOrMoveRadar(){
   const zoom=10;
   if(!STATE.map){
     STATE.map = L.map("radar", { zoomControl:true, attributionControl:false }).setView([STATE.lat,STATE.lon], zoom);
-    // Base: mapa detallado (fondo, sin etiquetas para no duplicarlas)
-    const mapa = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png",
+    const mapLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png",
       {maxZoom:20, subdomains:"abcd"});
-    const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    const satLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       {maxZoom:19});
-    mapa.addTo(STATE.map);
-    // Radar en el medio
+    mapLayer.addTo(STATE.map);
     STATE.radarLayerGroup = L.layerGroup().addTo(STATE.map);
-    // Etiquetas (nombres y carreteras) SIEMPRE por encima del radar → mapa y radar visibles a la vez
+    // Labels above the radar so place names stay visible over the precipitation
     L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png",
       {maxZoom:20, subdomains:"abcd", zIndex:650}).addTo(STATE.map);
     L.control.attribution({prefix:false}).addAttribution('© OpenStreetMap, © CARTO, © Esri').addTo(STATE.map);
-    L.control.layers({"Mapa":mapa,"Satélite":sat}, null, {position:"topright"}).addTo(STATE.map);
+    const layers={}; layers[t("layer_map")]=mapLayer; layers[t("layer_sat")]=satLayer;
+    L.control.layers(layers, null, {position:"topright"}).addTo(STATE.map);
     STATE.marker = L.circleMarker([STATE.lat,STATE.lon], {radius:7,color:"#fff",weight:2,fillColor:"#4f9dff",fillOpacity:1}).addTo(STATE.map);
     loadRadarFrames();
     $("radarPlay").addEventListener("click", toggleRadarPlay);
@@ -1080,9 +1354,9 @@ async function loadRadarFrames(){
     radarState.host=d.host;
     const p=(d.radar&&d.radar.past)||[], n=(d.radar&&d.radar.nowcast)||[];
     radarState.frames=[...p, ...n];
-    if(!radarState.frames.length){ $("radarTime").textContent="Radar no disponible"; return; }
+    if(!radarState.frames.length){ $("radarTime").textContent=t("radar_unavailable"); return; }
     radarState.idx=Math.max(0, p.length-1); showRadarFrame(radarState.idx); startRadarLoop();
-  }catch(e){ $("radarTime").textContent="Radar no disponible"; }
+  }catch(e){ $("radarTime").textContent=t("radar_unavailable"); }
 }
 function frameLayer(frame){
   if(radarState.layers[frame.time]) return radarState.layers[frame.time];
@@ -1097,14 +1371,15 @@ function showRadarFrame(i){
   frameLayer(f).setOpacity(0.55);
   const dt=new Date(f.time*1000), hh=String(dt.getHours()).padStart(2,"0"), mm=String(dt.getMinutes()).padStart(2,"0");
   const isPast=f.time*1000<=Date.now();
-  $("radarTime").textContent=(isPast?"":"pronóstico ")+`${hh}:${mm}`;
+  $("radarTime").textContent=(isPast?"":t("forecast_prefix"))+`${hh}:${mm}`;
 }
 function startRadarLoop(){ clearInterval(radarState.timer);
   radarState.timer=setInterval(()=>{ if(!radarState.playing) return;
     radarState.idx=(radarState.idx+1)%radarState.frames.length; showRadarFrame(radarState.idx); }, 700); }
 function toggleRadarPlay(){ radarState.playing=!radarState.playing; $("radarPlay").textContent=radarState.playing?"⏸️":"▶️"; }
 
-/* ---- Arranque ---- */
+/* ===================== Startup ===================== */
+applyI18n();
 (function boot(){
   let last=null; try{ last=JSON.parse(localStorage.getItem(LS_KEY)); }catch(e){}
   if("permissions" in navigator && navigator.permissions.query){
@@ -1118,10 +1393,10 @@ function toggleRadarPlay(){ radarState.playing=!radarState.playing; $("radarPlay
 function fallbackBoot(last){ if(last) setLocation(last.lat,last.lon,last.name); else { showOverlay(""); requestPreciseLocation(); } }
 function requestPreciseSilently(last){
   if(!("geolocation" in navigator)){ if(last) setLocation(last.lat,last.lon,last.name); else showOverlay(""); return; }
-  $("locName").textContent="Detectando ubicación…";
+  $("locName").textContent=t("detecting");
   navigator.geolocation.getCurrentPosition(
-    async (pos)=>{ const name=await reverseGeocode(pos.coords.latitude,pos.coords.longitude); setLocation(pos.coords.latitude,pos.coords.longitude,name||"Mi ubicación"); },
-    ()=>{ if(last) setLocation(last.lat,last.lon,last.name); else showOverlay("No se pudo obtener la ubicación.", true); },
+    async (pos)=>{ const name=await reverseGeocode(pos.coords.latitude,pos.coords.longitude); setLocation(pos.coords.latitude,pos.coords.longitude,name||t("my_location")); },
+    ()=>{ if(last) setLocation(last.lat,last.lon,last.name); else showOverlay(t("geo_fail"), true); },
     { enableHighAccuracy:true, timeout:12000, maximumAge:600000 }
   );
 }
