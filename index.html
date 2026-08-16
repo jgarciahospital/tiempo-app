@@ -213,7 +213,13 @@
   .dm-summary .dm-ico{width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center}
   .dm-summary h3{margin:0;font-size:1.15rem;text-transform:capitalize}
   .dm-sub{color:var(--muted);font-size:.86rem;margin-top:2px}
+  .dm-actions{display:flex;align-items:center;gap:6px;flex:none}
+  .dm-nav{width:34px;height:36px;border-radius:10px;padding:0;font-size:1.35rem;line-height:1;color:var(--ink)}
+  .dm-nav:disabled{opacity:.3;cursor:default}
+  .dm-nav:disabled:hover{border-color:var(--line);color:var(--ink)}
   .dm-x{flex:none;border-radius:50%;width:36px;height:36px;padding:0;font-size:1rem;line-height:1}
+  @keyframes dmSlideL{from{opacity:.2;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes dmSlideR{from{opacity:.2;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
   .dm-cols{display:grid;grid-template-columns:56px 34px 1fr 62px 66px;gap:10px;padding:8px 18px;
     color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--line)}
   .dm-cols span:nth-child(3){text-align:left}
@@ -391,7 +397,7 @@
 
 <!-- POP-UP DETALLE DEL DÍA -->
 <div class="overlay hidden" id="dayModal">
-  <div class="card daymodal">
+  <div class="card daymodal" id="dmCard">
     <div class="dm-head">
       <div class="dm-summary">
         <div class="dm-ico" id="dmIco"></div>
@@ -400,7 +406,11 @@
           <div class="dm-sub" id="dmSub"></div>
         </div>
       </div>
-      <button class="dm-x" id="dmClose" aria-label="Cerrar">✕</button>
+      <div class="dm-actions">
+        <button class="dm-nav" id="dmPrev" aria-label="Día anterior">‹</button>
+        <button class="dm-nav" id="dmNext" aria-label="Día siguiente">›</button>
+        <button class="dm-x" id="dmClose" aria-label="Cerrar">✕</button>
+      </div>
     </div>
     <div class="dm-cols"><span>Hora</span><span></span><span>Temp</span><span>Prob.</span><span>Lluvia</span></div>
     <div class="dm-body" id="dmBody"></div>
@@ -731,32 +741,34 @@ function segHTML(label, s){
   return `<div class="seg"><span class="seg-when">${label}</span><span class="seg-ico">${iconSVG(s.code,true,30)}</span><span class="seg-temp">${s.temp}°</span>${prob}</div>`;
 }
 
-/* ---- Pop-up: detalle horario del día ---- */
-let dayModalOpen=false;
+/* ---- Pop-up: detalle horario del día (navegable) ---- */
+let dayModalOpen=false, dmIndex=0, dmMin=0, dmMax=0;
 function openDayModal(iso){
   const d=CURRENT_DATA; if(!d) return;
-  const idx=d._idx, dd=d.daily, di=dd.time.indexOf(iso);
+  const dd=d.daily, idx=d._idx;
+  dmMin=idx.todayIdx; dmMax=Math.min(dd.time.length-1, idx.todayIdx+14);
+  let di=dd.time.indexOf(iso); if(di<0) di=dmMin;
+  dmIndex=Math.max(dmMin, Math.min(dmMax, di));
+  $("dayModal").classList.remove("hidden"); dayModalOpen=true;
+  renderDayModal(0);
+  try{ history.pushState({dm:1}, ""); }catch(e){}
+}
+function renderDayModal(dir){
+  const d=CURRENT_DATA; if(!d) return;
+  const dd=d.daily, idx=d._idx, di=dmIndex, iso=dd.time[di];
   const label=(iso===idx.curDate)?"Hoy":dayNames[new Date(iso+"T00:00").getDay()];
-  const [,desc]=wmo(di>=0?dd.weather_code[di]:0);
+  const [,desc]=wmo(dd.weather_code[di]);
   $("dmTitle").textContent=label;
-  $("dmIco").innerHTML=iconSVG(di>=0?dd.weather_code[di]:0, true, 46);
-  const sum=di>=0?dd.precipitation_sum[di]:0;
+  $("dmIco").innerHTML=iconSVG(dd.weather_code[di], true, 46);
+  const sum=dd.precipitation_sum[di]||0;
   $("dmSub").innerHTML=`${fmtFullDate(iso)} · ${desc}<br>máx <b>${Math.round(dd.temperature_2m_max[di])}°</b> · mín <b>${Math.round(dd.temperature_2m_min[di])}°</b>`
     + (sum>0?` · lluvia total <b>${sum.toFixed(1)} mm</b>`:"");
-  // filas hora a hora
-  const body=$("dmBody"); body.innerHTML="";
-  const h=d.hourly; let rows="";
+  const body=$("dmBody"); const h=d.hourly; let rows="";
   for(let i=0;i<h.time.length;i++){
     if(h.time[i].slice(0,10)!==iso) continue;
-    const hr=+h.time[i].slice(11,13);
-    const isDay=hr>=7 && hr<21;
-    const prob=h.precipitation_probability[i]||0;
-    const mm=h.precipitation[i]||0;
-    const isNow=(i===idx.nowIdx);
-    const sens=Math.round(h.apparent_temperature[i]);
-    const wind=Math.round(h.wind_speed_10m[i]);
-    const hum=Math.round(h.relative_humidity_2m[i]);
-    const dir=dirText(h.wind_direction_10m[i]);
+    const hr=+h.time[i].slice(11,13), isDay=hr>=7 && hr<21;
+    const prob=h.precipitation_probability[i]||0, mm=h.precipitation[i]||0, isNow=(i===idx.nowIdx);
+    const sens=Math.round(h.apparent_temperature[i]), wind=Math.round(h.wind_speed_10m[i]), hum=Math.round(h.relative_humidity_2m[i]), wdir=dirText(h.wind_direction_10m[i]);
     rows+=`<div class="dm-row${isNow?" now":""}">`
       +`<div class="dm-main">`
         +`<span class="dm-time">${String(hr).padStart(2,"0")}:00${isNow?" ·":""}</span>`
@@ -765,16 +777,17 @@ function openDayModal(iso){
         +`<span class="dm-prob${prob>0?"":" zero"}">${prob}%</span>`
         +`<span class="dm-mm${mm>0?"":" zero"}">${mm>0?mm.toFixed(1)+" mm":"0"}</span>`
       +`</div>`
-      +`<div class="dm-meta"><span>${MI.temp} Sens. ${sens}°</span><span>${MI.wind} ${wind} km/h${dir?" "+dir:""}</span><span>${MI.hum} ${hum}%</span></div>`
+      +`<div class="dm-meta"><span>${MI.temp} Sens. ${sens}°</span><span>${MI.wind} ${wind} km/h${wdir?" "+wdir:""}</span><span>${MI.hum} ${hum}%</span></div>`
       +`</div>`;
   }
   body.innerHTML=rows||'<div class="chart-empty">Sin datos horarios para este día.</div>';
-  $("dayModal").classList.remove("hidden");
-  dayModalOpen=true;
-  // desplazar a la hora actual si es hoy
-  const nowRow=body.querySelector(".dm-row.now"); if(nowRow) nowRow.scrollIntoView({block:"center"});
-  try{ history.pushState({dm:1}, ""); }catch(e){}
+  $("dmPrev").disabled = di<=dmMin;
+  $("dmNext").disabled = di>=dmMax;
+  const nowRow=body.querySelector(".dm-row.now"); if(nowRow) nowRow.scrollIntoView({block:"center"}); else body.scrollTop=0;
+  // animación de deslizamiento al cambiar de día
+  if(dir){ body.style.animation="none"; requestAnimationFrame(()=>{ body.style.animation=`dmSlide${dir>0?"L":"R"} .22s ease`; }); }
 }
+function goDay(delta){ const ni=Math.max(dmMin, Math.min(dmMax, dmIndex+delta)); if(ni!==dmIndex){ dmIndex=ni; renderDayModal(delta); } }
 function closeDayModal(fromPop){
   if(!dayModalOpen) return;
   $("dayModal").classList.add("hidden");
@@ -782,9 +795,27 @@ function closeDayModal(fromPop){
   if(!fromPop){ try{ if(history.state && history.state.dm) history.back(); }catch(e){} }
 }
 $("dmClose").addEventListener("click", ()=>closeDayModal(false));
+$("dmPrev").addEventListener("click", ()=>goDay(-1));
+$("dmNext").addEventListener("click", ()=>goDay(1));
 $("dayModal").addEventListener("click", (e)=>{ if(e.target===$("dayModal")) closeDayModal(false); });
-window.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && dayModalOpen) closeDayModal(false); });
+window.addEventListener("keydown", (e)=>{
+  if(!dayModalOpen) return;
+  if(e.key==="Escape") closeDayModal(false);
+  else if(e.key==="ArrowLeft") goDay(-1);
+  else if(e.key==="ArrowRight") goDay(1);
+});
 window.addEventListener("popstate", ()=>{ if(dayModalOpen) closeDayModal(true); });
+// Swipe horizontal para cambiar de día
+(function(){
+  let x0=null,y0=null;
+  const card=$("dmCard");
+  card.addEventListener("touchstart",(e)=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; },{passive:true});
+  card.addEventListener("touchend",(e)=>{
+    if(x0==null) return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0;
+    if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.4){ goDay(dx<0?1:-1); }
+    x0=y0=null;
+  },{passive:true});
+})();
 function fmtFullDate(iso){
   const d=new Date(iso+"T00:00");
   const dias=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
