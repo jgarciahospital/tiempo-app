@@ -1326,18 +1326,20 @@ function initOrMoveRadar(){
   const zoom=10;
   if(!STATE.map){
     STATE.map = L.map("radar", { zoomControl:true, attributionControl:false }).setView([STATE.lat,STATE.lon], zoom);
-    const mapLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-      {maxNativeZoom:16, maxZoom:20});
+    const mapLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      {maxNativeZoom:19, maxZoom:20});
     const satLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       {maxNativeZoom:19, maxZoom:20});
     mapLayer.addTo(STATE.map);
     STATE.radarLayerGroup = L.layerGroup().addTo(STATE.map);
-    // Labels above the radar so place names stay visible over the precipitation
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
-      {maxNativeZoom:16, maxZoom:20, zIndex:650}).addTo(STATE.map);
+    // Place labels above the radar; the street base already carries its own labels,
+    // so this overlay is only shown with the satellite view (which has none).
+    const refLabels = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+      {maxNativeZoom:19, maxZoom:20, zIndex:650});
     L.control.attribution({prefix:false}).addAttribution('© Esri, © OpenStreetMap contributors').addTo(STATE.map);
     const layers={}; layers[t("layer_map")]=mapLayer; layers[t("layer_sat")]=satLayer;
     L.control.layers(layers, null, {position:"topright"}).addTo(STATE.map);
+    STATE.map.on("baselayerchange", (e)=>{ if(e.name===t("layer_sat")) refLabels.addTo(STATE.map); else STATE.map.removeLayer(refLabels); });
     STATE.marker = L.circleMarker([STATE.lat,STATE.lon], {radius:7,color:"#fff",weight:2,fillColor:"#4f9dff",fillOpacity:1}).addTo(STATE.map);
     loadRadarFrames();
     $("radarPlay").addEventListener("click", toggleRadarPlay);
