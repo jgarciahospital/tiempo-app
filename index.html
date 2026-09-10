@@ -817,8 +817,7 @@ function applyI18n(){
   $("footer").innerHTML =
     `${t("footer_data")} <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> · `
    +`${t("footer_radar")} <a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a> · `
-   +`${t("footer_map")} © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>/CARTO · `
-   +`${t("layer_sat")} © Esri<br>${t("footer_demo")}`;
+   +`${t("footer_map")}/${t("layer_sat")} © <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>, © OpenStreetMap<br>${t("footer_demo")}`;
 }
 
 /* ===================== Location overlay ===================== */
@@ -1327,16 +1326,16 @@ function initOrMoveRadar(){
   const zoom=10;
   if(!STATE.map){
     STATE.map = L.map("radar", { zoomControl:true, attributionControl:false }).setView([STATE.lat,STATE.lon], zoom);
-    const mapLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png",
-      {maxZoom:20, subdomains:"abcd"});
+    const mapLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+      {maxNativeZoom:16, maxZoom:20});
     const satLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      {maxZoom:19});
+      {maxNativeZoom:19, maxZoom:20});
     mapLayer.addTo(STATE.map);
     STATE.radarLayerGroup = L.layerGroup().addTo(STATE.map);
     // Labels above the radar so place names stay visible over the precipitation
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png",
-      {maxZoom:20, subdomains:"abcd", zIndex:650}).addTo(STATE.map);
-    L.control.attribution({prefix:false}).addAttribution('© OpenStreetMap, © CARTO, © Esri').addTo(STATE.map);
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+      {maxNativeZoom:16, maxZoom:20, zIndex:650}).addTo(STATE.map);
+    L.control.attribution({prefix:false}).addAttribution('© Esri, © OpenStreetMap contributors').addTo(STATE.map);
     const layers={}; layers[t("layer_map")]=mapLayer; layers[t("layer_sat")]=satLayer;
     L.control.layers(layers, null, {position:"topright"}).addTo(STATE.map);
     STATE.marker = L.circleMarker([STATE.lat,STATE.lon], {radius:7,color:"#fff",weight:2,fillColor:"#4f9dff",fillOpacity:1}).addTo(STATE.map);
