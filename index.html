@@ -215,21 +215,22 @@
   .dm-x{flex:none;border-radius:50%;width:36px;height:36px;padding:0;font-size:1rem;line-height:1}
   @keyframes dmSlideL{from{opacity:.2;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
   @keyframes dmSlideR{from{opacity:.2;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
-  .dm-cols{display:grid;grid-template-columns:52px 30px 1fr 84px;gap:10px;padding:8px 18px;
+  .dm-cols{display:grid;grid-template-columns:52px 1fr 84px;gap:10px;padding:8px 18px;
     color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--line)}
-  .dm-cols span:nth-child(3){text-align:left}
-  .dm-cols span:nth-child(4){text-align:right}
-  .dm-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 18px 14px}
+  .dm-cols span:nth-child(2){text-align:center}
+  .dm-cols span:nth-child(3){text-align:right}
+  .dm-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 18px 14px;scrollbar-width:none;-ms-overflow-style:none}
+  .dm-body::-webkit-scrollbar{width:0;height:0;display:none}
   .dm-row{display:flex;flex-direction:column;gap:5px;padding:10px 0;border-bottom:1px solid var(--line)}
   .dm-row:last-child{border-bottom:none}
-  .dm-main{display:grid;grid-template-columns:52px 30px 1fr 84px;gap:10px;align-items:center}
-  .dm-meta{display:flex;flex-wrap:wrap;gap:14px;padding-left:62px;color:var(--muted);font-size:.78rem}
+  .dm-main{display:grid;grid-template-columns:52px 1fr 84px;gap:10px;align-items:center}
+  .dm-mid{display:flex;align-items:center;justify-content:center;gap:10px}
+  .dm-meta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;color:var(--muted);font-size:.78rem}
   .dm-meta span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
   .dm-meta .mi{flex:none;display:block}
-  .dm-row.now{background:linear-gradient(90deg,rgba(79,157,255,.14),transparent);border-radius:10px;padding-left:6px;margin-left:-6px}
-  .dm-row.now .dm-meta{padding-left:56px}
+  .dm-row.now{background:linear-gradient(90deg,rgba(79,157,255,.14),rgba(79,157,255,.05));border-radius:10px}
   .dm-time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.9rem}
-  .dm-ico2{display:flex;justify-content:center}
+  .dm-ico2{display:flex;align-items:center}
   .dm-temp{font-weight:700}
   .dm-precip{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
   .dm-precip b{font-weight:700;font-size:.9rem;color:var(--rain)}
@@ -388,7 +389,7 @@
         <button class="dm-x" id="dmClose">✕</button>
       </div>
     </div>
-    <div class="dm-cols"><span id="colHour"></span><span></span><span id="colTemp"></span><span id="colRain"></span></div>
+    <div class="dm-cols"><span id="colHour"></span><span id="colTemp"></span><span id="colRain"></span></div>
     <div class="dm-body" id="dmBody"></div>
   </div>
 </div>
@@ -1072,8 +1073,7 @@ function renderDayModal(dir){
     rows+=`<div class="dm-row${isNow?" now":""}">`
       +`<div class="dm-main">`
         +`<span class="dm-time">${String(hr).padStart(2,"0")}:00${isNow?" ·":""}</span>`
-        +`<span class="dm-ico2">${iconSVG(h.weather_code[i], isDay, 26)}</span>`
-        +`<span class="dm-temp">${Math.round(h.temperature_2m[i])}°</span>`
+        +`<span class="dm-mid"><span class="dm-ico2">${iconSVG(h.weather_code[i], isDay, 26)}</span><span class="dm-temp">${Math.round(h.temperature_2m[i])}°</span></span>`
         +`<span class="dm-precip${(prob>0||mm>0)?"":" zero"}"><b>${prob}%</b>${mm>0?`<i>${mm.toFixed(1)} mm</i>`:""}</span>`
       +`</div>`
       +`<div class="dm-meta"><span>${META_ICONS.temp} ${t("feels_short")} ${sens}°</span><span>${META_ICONS.hum} ${hum}%</span><span>${META_ICONS.wind} ${wind} km/h${wdir?" "+wdir:""}</span></div>`
