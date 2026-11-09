@@ -431,7 +431,7 @@ const STR = {
     past_rain:"Past rain", fore_rain:"Forecast rain", prob:"Probability", gusts:"Gusts", now:"NOW",
     extended:"Extended forecast", morning:"Morning", afternoon:"Afternoon", min_l:"min", max_l:"max",
     radar:"Weather radar", radar_intensity:"Rain intensity", weak:"light", strong:"heavy",
-    layer_map:"Map", layer_sat:"Satellite", radar_unavailable:"Radar unavailable", forecast_prefix:"forecast ",
+    layer_map:"Map", layer_sat:"Satellite", radar_unavailable:"Radar unavailable", radar_extrap:"extrapolated",
     consensus_hdr:"Model agreement", reliability:"Reliability", high:"High", medium:"Medium", low:"Low", calculating:"Calculating…",
     models_rain:"{n} of {m} models expect rain today", models_dry:"{n} of {m} models expect no rain today",
     agree_high_rain:"Strong agreement on rain. Amount estimated between {a} and {b}.", agree_high_dry:"Strong agreement: no significant rain today.",
@@ -466,7 +466,7 @@ const STR = {
     past_rain:"Lluvia pasada", fore_rain:"Lluvia prevista", prob:"Probabilidad", gusts:"Ráfagas", now:"AHORA",
     extended:"Pronóstico extendido", morning:"Mañana", afternoon:"Tarde", min_l:"mín", max_l:"máx",
     radar:"Radar meteorológico", radar_intensity:"Intensidad de lluvia", weak:"débil", strong:"fuerte",
-    layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar no disponible", forecast_prefix:"pronóstico ",
+    layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar no disponible", radar_extrap:"extrapolado",
     consensus_hdr:"Concordancia entre modelos", reliability:"Fiabilidad", high:"Alta", medium:"Media", low:"Baja", calculating:"Calculando…",
     models_rain:"{n} de {m} modelos prevén lluvia hoy", models_dry:"{n} de {m} modelos no prevén lluvia hoy",
     agree_high_rain:"Fuerte concordancia en que lloverá. Cantidad estimada entre {a} y {b}.", agree_high_dry:"Alta concordancia: hoy sin lluvia significativa.",
@@ -501,7 +501,7 @@ const STR = {
     past_rain:"Pluja passada", fore_rain:"Pluja prevista", prob:"Probabilitat", gusts:"Ratxes", now:"ARA",
     extended:"Pronòstic ampliat", morning:"Matí", afternoon:"Tarda", min_l:"mín", max_l:"màx",
     radar:"Radar meteorològic", radar_intensity:"Intensitat de pluja", weak:"feble", strong:"forta",
-    layer_map:"Mapa", layer_sat:"Satèl·lit", radar_unavailable:"Radar no disponible", forecast_prefix:"pronòstic ",
+    layer_map:"Mapa", layer_sat:"Satèl·lit", radar_unavailable:"Radar no disponible", radar_extrap:"extrapolat",
     consensus_hdr:"Concordança entre models", reliability:"Fiabilitat", high:"Alta", medium:"Mitjana", low:"Baixa", calculating:"Calculant…",
     models_rain:"{n} de {m} models preveuen pluja avui", models_dry:"{n} de {m} models no preveuen pluja avui",
     agree_high_rain:"Forta concordança que plourà. Quantitat estimada entre {a} i {b}.", agree_high_dry:"Alta concordança: avui sense pluja significativa.",
@@ -536,7 +536,7 @@ const STR = {
     past_rain:"Choiva pasada", fore_rain:"Choiva prevista", prob:"Probabilidade", gusts:"Refachos", now:"AGORA",
     extended:"Prognóstico ampliado", morning:"Mañá", afternoon:"Tarde", min_l:"mín", max_l:"máx",
     radar:"Radar meteorolóxico", radar_intensity:"Intensidade de choiva", weak:"débil", strong:"forte",
-    layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar non dispoñible", forecast_prefix:"prognóstico ",
+    layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar non dispoñible", radar_extrap:"extrapolado",
     consensus_hdr:"Concordancia entre modelos", reliability:"Fiabilidade", high:"Alta", medium:"Media", low:"Baixa", calculating:"Calculando…",
     models_rain:"{n} de {m} modelos prevén choiva hoxe", models_dry:"{n} de {m} modelos non prevén choiva hoxe",
     agree_high_rain:"Forte concordancia en que choverá. Cantidade estimada entre {a} e {b}.", agree_high_dry:"Alta concordancia: hoxe sen choiva significativa.",
@@ -571,7 +571,7 @@ const STR = {
     past_rain:"Pluie passée", fore_rain:"Pluie prévue", prob:"Probabilité", gusts:"Rafales", now:"MAINT.",
     extended:"Prévisions étendues", morning:"Matin", afternoon:"Après-midi", min_l:"min", max_l:"max",
     radar:"Radar météo", radar_intensity:"Intensité de pluie", weak:"faible", strong:"forte",
-    layer_map:"Carte", layer_sat:"Satellite", radar_unavailable:"Radar indisponible", forecast_prefix:"prévision ",
+    layer_map:"Carte", layer_sat:"Satellite", radar_unavailable:"Radar indisponible", radar_extrap:"extrapolé",
     consensus_hdr:"Accord entre modèles", reliability:"Fiabilité", high:"Élevée", medium:"Moyenne", low:"Faible", calculating:"Calcul…",
     models_rain:"{n} modèles sur {m} prévoient de la pluie aujourd'hui", models_dry:"{n} modèles sur {m} ne prévoient pas de pluie aujourd'hui",
     agree_high_rain:"Fort accord sur la pluie. Quantité estimée entre {a} et {b}.", agree_high_dry:"Fort accord : pas de pluie significative aujourd'hui.",
@@ -606,7 +606,7 @@ const STR = {
     past_rain:"Chuva passada", fore_rain:"Chuva prevista", prob:"Probabilidade", gusts:"Rajadas", now:"AGORA",
     extended:"Previsão alargada", morning:"Manhã", afternoon:"Tarde", min_l:"mín", max_l:"máx",
     radar:"Radar meteorológico", radar_intensity:"Intensidade de chuva", weak:"fraca", strong:"forte",
-    layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar indisponível", forecast_prefix:"previsão ",
+    layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar indisponível", radar_extrap:"extrapolado",
     consensus_hdr:"Concordância entre modelos", reliability:"Fiabilidade", high:"Alta", medium:"Média", low:"Baixa", calculating:"A calcular…",
     models_rain:"{n} de {m} modelos preveem chuva hoje", models_dry:"{n} de {m} modelos não preveem chuva hoje",
     agree_high_rain:"Forte concordância de que vai chover. Quantidade estimada entre {a} e {b}.", agree_high_dry:"Forte concordância: hoje sem chuva significativa.",
@@ -1320,7 +1320,118 @@ function fillAxis(el,min,max,unit){
 }
 
 /* ===================== Radar and layers ===================== */
-let radarState = { frames:[], idx:0, layers:{}, playing:true, timer:null, host:"" };
+const RADAR_STEP_MIN = 10;          // minutes between frames
+const RADAR_HORIZON_MIN = 120;      // forecast horizon from the current time
+const RADAR_REF_ZOOM = 6;           // zoom at which displacement is measured and stored
+const RADAR_MOSAIC = 768;           // 3x3 tiles of 256 px around the location
+let radarState = { frames:[], idx:0, layers:[], playing:true, timer:null, host:"", token:0 };
+
+const radarImgCache = new Map();
+function loadRadarImage(url){
+  if(radarImgCache.has(url)) return radarImgCache.get(url);
+  const p = new Promise((resolve)=>{
+    const im = new Image(); im.crossOrigin = "anonymous";
+    im.onload = ()=>resolve(im); im.onerror = ()=>resolve(null); im.src = url;
+  });
+  radarImgCache.set(url, p); return p;
+}
+
+// Radar tile layer whose content is displaced by (dx, dy) px at RADAR_REF_ZOOM
+const ShiftedRadarLayer = L.GridLayer.extend({
+  initialize: function(frame, host, options){ L.GridLayer.prototype.initialize.call(this, options); this._frame=frame; this._host=host; },
+  createTile: function(coords, done){
+    const tile = document.createElement("canvas"); tile.width = tile.height = 256;
+    const z = coords.z, n = Math.pow(2, z), scale = Math.pow(2, z - RADAR_REF_ZOOM);
+    const ox = coords.x*256 - this._frame.dx*scale, oy = coords.y*256 - this._frame.dy*scale;   // source origin (world px)
+    const x0 = Math.floor(ox/256), x1 = Math.floor((ox+255.99)/256);
+    const y0 = Math.floor(oy/256), y1 = Math.floor((oy+255.99)/256);
+    const jobs = [];
+    for(let sx=x0; sx<=x1; sx++) for(let sy=y0; sy<=y1; sy++){
+      if(sy<0 || sy>=n) continue;
+      const wx = ((sx % n) + n) % n;
+      const url = `${this._host}${this._frame.path}/256/${z}/${wx}/${sy}/4/1_1.png`;
+      jobs.push(loadRadarImage(url).then(im=>({im, x:sx*256-ox, y:sy*256-oy})));
+    }
+    Promise.all(jobs).then(parts=>{
+      const g = tile.getContext("2d");
+      parts.forEach(p=>{ if(p.im) g.drawImage(p.im, p.x, p.y); });
+      done(null, tile);
+    });
+    return tile;
+  }
+});
+
+function lonLatToTile(lat, lon, z){
+  const n = Math.pow(2, z), r = lat*Math.PI/180;
+  return { n, x: Math.floor((lon+180)/360*n), y: Math.floor((1 - Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*n) };
+}
+// Echo intensity (alpha channel of the grayscale scheme) of a 3x3 tile mosaic, at half resolution
+async function radarMosaic(host, path, cx, cy, n){
+  const c = document.createElement("canvas"); c.width = c.height = RADAR_MOSAIC;
+  const g = c.getContext("2d"), jobs = [];
+  for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++){
+    const ty = cy+j; if(ty<0 || ty>=n) continue;
+    const tx = (((cx+i) % n) + n) % n;
+    jobs.push(loadRadarImage(`${host}${path}/256/${RADAR_REF_ZOOM}/${tx}/${ty}/0/0_0.png`).then(im=>{ if(im) g.drawImage(im,(i+1)*256,(j+1)*256); }));
+  }
+  await Promise.all(jobs);
+  const S = RADAR_MOSAIC/2, h = document.createElement("canvas"); h.width = h.height = S;
+  const hg = h.getContext("2d"); hg.drawImage(c, 0, 0, S, S);
+  const px = hg.getImageData(0, 0, S, S).data, a = new Float32Array(S*S);
+  for(let i=0;i<a.length;i++) a[i] = px[i*4+3];
+  return a;
+}
+// Displacement (px) that best maps `older` onto `newer`, by normalised cross-correlation of the echo fields
+function estimateShift(older, newer, S, R){
+  const idx = [], val = []; let so = 0, sn = 0;
+  for(let i=0;i<older.length;i++) if(older[i]>0){ idx.push(i); val.push(older[i]); so += older[i]*older[i]; }
+  for(let i=0;i<newer.length;i++) sn += newer[i]*newer[i];
+  if(!idx.length || !sn) return null;
+  const step = Math.max(1, Math.ceil(idx.length/20000)), norm = Math.sqrt(so*sn)/step, W = 2*R+1, sc = new Float32Array(W*W);
+  let best = -1, bx = 0, by = 0;
+  for(let dy=-R; dy<=R; dy++) for(let dx=-R; dx<=R; dx++){
+    let s = 0;
+    for(let k=0;k<idx.length;k+=step){
+      const i = idx[k], x = (i % S) + dx, y = ((i / S) | 0) + dy;
+      if(x<0 || x>=S || y<0 || y>=S) continue;
+      s += val[k]*newer[y*S+x];
+    }
+    const v = s/norm; sc[(dy+R)*W + dx+R] = v;
+    if(v>best){ best = v; bx = dx; by = dy; }
+  }
+  if(Math.abs(bx)===R || Math.abs(by)===R) return null;   // peak at the search border: not trustworthy
+  const at = (dx,dy)=>sc[(dy+R)*W + dx+R];
+  const refine = (m,c,p)=>{ const d = m - 2*c + p; return d<0 ? 0.5*(m-p)/d : 0; };
+  return { dx: bx + refine(at(bx-1,by), at(bx,by), at(bx+1,by)), dy: by + refine(at(bx,by-1), at(bx,by), at(bx,by+1)), score: best };
+}
+// Motion of the rain field around the location, in px (RADAR_REF_ZOOM) per minute
+async function estimateRadarMotion(host, past){
+  const last = past.length-1, lag = Math.min(3, last); if(lag<1) return null;
+  const pairs = Math.min(3, past.length-lag);                          // consecutive pairs, averaged to damp noise
+  const tile = lonLatToTile(STATE.lat, STATE.lon, RADAR_REF_ZOOM);
+  const need = new Set(); for(let o=0;o<pairs;o++){ need.add(last-o); need.add(last-o-lag); }
+  const mosaics = {};
+  await Promise.all([...need].map(async i=>{ mosaics[i] = await radarMosaic(host, past[i].path, tile.x, tile.y, tile.n); }));
+  const count = (arr)=>{ let c=0; for(let i=0;i<arr.length;i++) if(arr[i]>0) c++; return c; };
+  if(count(mosaics[last])<20 && count(mosaics[last-lag])<20) return { vx:0, vy:0, score:1 };   // no rain around: nothing to move
+  const ests = [];
+  for(let o=0;o<pairs;o++){
+    const e = estimateShift(mosaics[last-o-lag], mosaics[last-o], RADAR_MOSAIC/2, 16);
+    if(e && e.score>=0.3) ests.push(e);
+  }
+  if(!ests.length) return null;
+  const mean = (key)=>ests.reduce((s,e)=>s+e[key],0)/ests.length;
+  const k = 2/(lag*RADAR_STEP_MIN);                                     // half-resolution px per lag -> reference px per minute
+  return { vx: mean("dx")*k, vy: mean("dy")*k, score: mean("score") };
+}
+function buildForecastFrames(latest, motion){
+  const start = Math.floor(Date.now()/1000/(RADAR_STEP_MIN*60))*RADAR_STEP_MIN*60, frames = [];
+  for(let m=0; m<=RADAR_HORIZON_MIN; m+=RADAR_STEP_MIN){
+    const time = start + m*60, tau = Math.max(0, (time - latest.time)/60);
+    frames.push({ time, path: latest.path, dx: motion.vx*tau, dy: motion.vy*tau, forecast: tau>0 });
+  }
+  return frames;
+}
 function initOrMoveRadar(){
   const zoom=10;
   if(!STATE.map){
@@ -1346,32 +1457,41 @@ function initOrMoveRadar(){
   } else {
     STATE.map.setView([STATE.lat,STATE.lon], zoom);
     STATE.marker.setLatLng([STATE.lat,STATE.lon]);
+    loadRadarFrames();
   }
 }
+setInterval(()=>{ if(STATE.map && !document.hidden) loadRadarFrames(); }, 10*60*1000);
+// Frames run from the current time to +2 h: the latest observation advected by the measured
+// rain motion. If the motion cannot be measured reliably, the observed last 2 h are shown instead.
 async function loadRadarFrames(){
+  const token = ++radarState.token;
+  clearInterval(radarState.timer);
+  STATE.radarLayerGroup.clearLayers();
+  radarState.layers = []; radarState.frames = []; radarImgCache.clear();
   try{
-    const r=await fetch("https://api.rainviewer.com/public/weather-maps.json"); const d=await r.json();
-    radarState.host=d.host;
-    const p=(d.radar&&d.radar.past)||[], n=(d.radar&&d.radar.nowcast)||[];
-    radarState.frames=[...p, ...n];
-    if(!radarState.frames.length){ $("radarTime").textContent=t("radar_unavailable"); return; }
-    radarState.idx=Math.max(0, p.length-1); showRadarFrame(radarState.idx); startRadarLoop();
-  }catch(e){ $("radarTime").textContent=t("radar_unavailable"); }
-}
-function frameLayer(frame){
-  if(radarState.layers[frame.time]) return radarState.layers[frame.time];
-  const url=`${radarState.host}${frame.path}/256/{z}/{x}/{y}/4/1_1.png`;
-  const layer=L.tileLayer(url, {opacity:0, tileSize:256, zIndex:400, maxNativeZoom:7, maxZoom:20});
-  STATE.radarLayerGroup.addLayer(layer);
-  radarState.layers[frame.time]=layer; return layer;
+    const r = await fetch("https://api.rainviewer.com/public/weather-maps.json"); const d = await r.json();
+    const past = (d.radar && d.radar.past) || [];
+    if(!past.length){ $("radarTime").textContent = t("radar_unavailable"); return; }
+    const motion = await estimateRadarMotion(d.host, past);
+    if(token !== radarState.token) return;
+    radarState.host = d.host;
+    radarState.frames = motion
+      ? buildForecastFrames(past[past.length-1], motion)
+      : past.map(f=>({ time:f.time, path:f.path, dx:0, dy:0, forecast:false }));
+    radarState.frames.forEach(f=>{
+      const layer = new ShiftedRadarLayer(f, d.host, { tileSize:256, maxNativeZoom:7, maxZoom:20, opacity:0, zIndex:400 });
+      STATE.radarLayerGroup.addLayer(layer); radarState.layers.push(layer);
+    });
+    radarState.idx = motion ? 0 : radarState.frames.length-1;
+    showRadarFrame(radarState.idx); startRadarLoop();
+  }catch(e){ if(token === radarState.token) $("radarTime").textContent = t("radar_unavailable"); }
 }
 function showRadarFrame(i){
-  const f=radarState.frames[i]; if(!f) return;
-  Object.values(radarState.layers).forEach(l=>l.setOpacity(0));
-  frameLayer(f).setOpacity(0.55);
-  const dt=new Date(f.time*1000), hh=String(dt.getHours()).padStart(2,"0"), mm=String(dt.getMinutes()).padStart(2,"0");
-  const isPast=f.time*1000<=Date.now();
-  $("radarTime").textContent=(isPast?"":t("forecast_prefix"))+`${hh}:${mm}`;
+  const f = radarState.frames[i]; if(!f) return;
+  radarState.layers.forEach(l=>l.setOpacity(0));
+  radarState.layers[i].setOpacity(0.55);
+  const dt = new Date(f.time*1000), hh = String(dt.getHours()).padStart(2,"0"), mm = String(dt.getMinutes()).padStart(2,"0");
+  $("radarTime").textContent = `${hh}:${mm}` + (f.forecast ? ` · ${t("radar_extrap")}` : "");
 }
 function startRadarLoop(){ clearInterval(radarState.timer);
   radarState.timer=setInterval(()=>{ if(!radarState.playing) return;
