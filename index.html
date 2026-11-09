@@ -434,7 +434,7 @@ const STR = {
     layer_map:"Map", layer_sat:"Satellite", radar_unavailable:"Radar unavailable", forecast_prefix:"forecast ",
     consensus_hdr:"Model agreement", reliability:"Reliability", high:"High", medium:"Medium", low:"Low", calculating:"Calculating…",
     models_rain:"{n} of {m} models expect rain today", models_dry:"{n} of {m} models expect no rain today",
-    agree_high_rain:"Strong agreement. Around {mm} expected.", agree_high_dry:"Strong agreement: no significant rain today.",
+    agree_high_rain:"Strong agreement on rain. Amount estimated between {a} and {b}.", agree_high_dry:"Strong agreement: no significant rain today.",
     agree_medium:"Partial agreement (rain estimated between {a} and {b}). For the short term, rely on the radar and hourly forecast.",
     agree_low:"Models disagree (between {a} and {b}). Low reliability: check the radar and hourly forecast before deciding.",
     no_data:"no data", col_hour:"Hour", col_temp:"Temp", col_prob:"Prob.", col_rain:"Rain", feels_short:"Feels",
@@ -469,7 +469,7 @@ const STR = {
     layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar no disponible", forecast_prefix:"pronóstico ",
     consensus_hdr:"Concordancia entre modelos", reliability:"Fiabilidad", high:"Alta", medium:"Media", low:"Baja", calculating:"Calculando…",
     models_rain:"{n} de {m} modelos prevén lluvia hoy", models_dry:"{n} de {m} modelos no prevén lluvia hoy",
-    agree_high_rain:"Alta concordancia. Se esperan del orden de {mm}.", agree_high_dry:"Alta concordancia: hoy sin lluvia significativa.",
+    agree_high_rain:"Fuerte concordancia en que lloverá. Cantidad estimada entre {a} y {b}.", agree_high_dry:"Alta concordancia: hoy sin lluvia significativa.",
     agree_medium:"Concordancia parcial (lluvia estimada entre {a} y {b}). Para el corto plazo, guíate por el radar y la previsión por horas.",
     agree_low:"Los modelos discrepan (entre {a} y {b}). Fiabilidad baja: vigila el radar y la previsión por horas antes de decidir.",
     no_data:"sin datos", col_hour:"Hora", col_temp:"Temp", col_prob:"Prob.", col_rain:"Lluvia", feels_short:"Sens.",
@@ -504,7 +504,7 @@ const STR = {
     layer_map:"Mapa", layer_sat:"Satèl·lit", radar_unavailable:"Radar no disponible", forecast_prefix:"pronòstic ",
     consensus_hdr:"Concordança entre models", reliability:"Fiabilitat", high:"Alta", medium:"Mitjana", low:"Baixa", calculating:"Calculant…",
     models_rain:"{n} de {m} models preveuen pluja avui", models_dry:"{n} de {m} models no preveuen pluja avui",
-    agree_high_rain:"Alta concordança. S'esperen uns {mm}.", agree_high_dry:"Alta concordança: avui sense pluja significativa.",
+    agree_high_rain:"Forta concordança que plourà. Quantitat estimada entre {a} i {b}.", agree_high_dry:"Alta concordança: avui sense pluja significativa.",
     agree_medium:"Concordança parcial (pluja estimada entre {a} i {b}). A curt termini, guia't pel radar i la previsió per hores.",
     agree_low:"Els models discrepen (entre {a} i {b}). Fiabilitat baixa: vigila el radar i la previsió per hores abans de decidir.",
     no_data:"sense dades", col_hour:"Hora", col_temp:"Temp", col_prob:"Prob.", col_rain:"Pluja", feels_short:"Sens.",
@@ -539,7 +539,7 @@ const STR = {
     layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar non dispoñible", forecast_prefix:"prognóstico ",
     consensus_hdr:"Concordancia entre modelos", reliability:"Fiabilidade", high:"Alta", medium:"Media", low:"Baixa", calculating:"Calculando…",
     models_rain:"{n} de {m} modelos prevén choiva hoxe", models_dry:"{n} de {m} modelos non prevén choiva hoxe",
-    agree_high_rain:"Alta concordancia. Espéranse uns {mm}.", agree_high_dry:"Alta concordancia: hoxe sen choiva significativa.",
+    agree_high_rain:"Forte concordancia en que choverá. Cantidade estimada entre {a} e {b}.", agree_high_dry:"Alta concordancia: hoxe sen choiva significativa.",
     agree_medium:"Concordancia parcial (choiva estimada entre {a} e {b}). A curto prazo, guíate polo radar e a previsión por horas.",
     agree_low:"Os modelos discrepan (entre {a} e {b}). Fiabilidade baixa: vixía o radar e a previsión por horas antes de decidir.",
     no_data:"sen datos", col_hour:"Hora", col_temp:"Temp", col_prob:"Prob.", col_rain:"Choiva", feels_short:"Sens.",
@@ -574,7 +574,7 @@ const STR = {
     layer_map:"Carte", layer_sat:"Satellite", radar_unavailable:"Radar indisponible", forecast_prefix:"prévision ",
     consensus_hdr:"Accord entre modèles", reliability:"Fiabilité", high:"Élevée", medium:"Moyenne", low:"Faible", calculating:"Calcul…",
     models_rain:"{n} modèles sur {m} prévoient de la pluie aujourd'hui", models_dry:"{n} modèles sur {m} ne prévoient pas de pluie aujourd'hui",
-    agree_high_rain:"Fort accord. Environ {mm} attendus.", agree_high_dry:"Fort accord : pas de pluie significative aujourd'hui.",
+    agree_high_rain:"Fort accord sur la pluie. Quantité estimée entre {a} et {b}.", agree_high_dry:"Fort accord : pas de pluie significative aujourd'hui.",
     agree_medium:"Accord partiel (pluie estimée entre {a} et {b}). À court terme, fiez-vous au radar et aux prévisions horaires.",
     agree_low:"Les modèles divergent (entre {a} et {b}). Fiabilité faible : consultez le radar et les prévisions horaires avant de décider.",
     no_data:"aucune donnée", col_hour:"Heure", col_temp:"Temp", col_prob:"Prob.", col_rain:"Pluie", feels_short:"Ress.",
@@ -609,7 +609,7 @@ const STR = {
     layer_map:"Mapa", layer_sat:"Satélite", radar_unavailable:"Radar indisponível", forecast_prefix:"previsão ",
     consensus_hdr:"Concordância entre modelos", reliability:"Fiabilidade", high:"Alta", medium:"Média", low:"Baixa", calculating:"A calcular…",
     models_rain:"{n} de {m} modelos preveem chuva hoje", models_dry:"{n} de {m} modelos não preveem chuva hoje",
-    agree_high_rain:"Forte concordância. Esperam-se cerca de {mm}.", agree_high_dry:"Forte concordância: hoje sem chuva significativa.",
+    agree_high_rain:"Forte concordância de que vai chover. Quantidade estimada entre {a} e {b}.", agree_high_dry:"Forte concordância: hoje sem chuva significativa.",
     agree_medium:"Concordância parcial (chuva estimada entre {a} e {b}). A curto prazo, guie-se pelo radar e pela previsão horária.",
     agree_low:"Os modelos divergem (entre {a} e {b}). Fiabilidade baixa: verifique o radar e a previsão horária antes de decidir.",
     no_data:"sem dados", col_hour:"Hora", col_temp:"Temp", col_prob:"Prob.", col_rain:"Chuva", feels_short:"Sens.",
@@ -922,12 +922,13 @@ function renderConsensus(rows){
   const majorityRain=rain>n/2;
   const agree=Math.max(rain,dry)/n;
   const sums=usable.map(r=>r.sum==null?0:r.sum);
-  const mmMin=Math.min(...sums), mmMax=Math.max(...sums), spread=mmMax-mmMin;
-  const sorted=[...sums].sort((a,b)=>a-b), mmMed=sorted[Math.floor(sorted.length/2)];
+  const mmMin=Math.min(...sums), mmMax=Math.max(...sums);
+  // Reliability reflects how much the models agree on the rain/no-rain outcome
+  // (what the headline states); the amount spread is conveyed in the text, not here.
   let levelKey, cls;
-  if(agree>=0.8 && spread<=3){ levelKey="high"; cls="high"; }
-  else if(agree<0.6 || spread>8){ levelKey="low"; cls="low"; }
-  else { levelKey="medium"; cls="medium"; }
+  if(agree>=0.8){ levelKey="high"; cls="high"; }
+  else if(agree>=0.6){ levelKey="medium"; cls="medium"; }
+  else { levelKey="low"; cls="low"; }
   const badge=$("csBadge"); badge.className="cs-badge "+cls;
   badge.innerHTML=`${t("reliability")}<span class="lvl">${t(levelKey)}</span>`;
   $("csTitle").textContent = majorityRain
@@ -935,7 +936,7 @@ function renderConsensus(rows){
     : t("models_dry",{n:dry,m:n});
   let sub;
   if(cls==="high"){
-    sub = majorityRain ? t("agree_high_rain",{mm:formatMM(mmMed)}) : t("agree_high_dry");
+    sub = majorityRain ? t("agree_high_rain",{a:formatMM(mmMin), b:formatMM(mmMax)}) : t("agree_high_dry");
   } else if(cls==="medium"){
     sub = t("agree_medium",{a:formatMM(mmMin), b:formatMM(mmMax)});
   } else {
